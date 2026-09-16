@@ -1,0 +1,1193 @@
+[
+  {
+    "Id": "8e3eea049cf4aaa0dbda88e747b640639d3a9d0f006204ef22d35f14f8dcf3eb",
+    "Names": ["/karakeep-web-1"],
+    "Image": "ghcr.io/karakeep-app/karakeep:release",
+    "ImageID": "sha256:2be81d21df718a9b536695f2bd8a01aa749e0a1c5740b2cd852b20dfd4023aa9",
+    "Command": "/init",
+    "Created": 1789396271,
+    "Ports": [
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 3000,
+        "PublicPort": 9091,
+        "Type": "tcp"
+      },
+      { "IP": "::", "PrivatePort": 3000, "PublicPort": 9091, "Type": "tcp" }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "611f81ddc2c87ce244b83ec394f175fe2c02e6a41d753564ffec2e5f32037986",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:2be81d21df718a9b536695f2bd8a01aa749e0a1c5740b2cd852b20dfd4023aa9",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "karakeep",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/03_life/karakeep/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/03_life/karakeep",
+      "com.docker.compose.replace": "web-1",
+      "com.docker.compose.service": "web",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.source": "https://github.com/karakeep-app/karakeep",
+      "traefik.docker.network": "traefik-proxy",
+      "traefik.enable": "true",
+      "traefik.http.routers.karakeep.entrypoints": "https",
+      "traefik.http.routers.karakeep.rule": "Host(`kara.dimrillgate.com`)",
+      "traefik.http.routers.karakeep.tls": "true",
+      "traefik.http.services.karakeep.loadbalancer.server.port": "3000"
+    },
+    "State": "running",
+    "Status": "Up 30 seconds (healthy)",
+    "HostConfig": { "NetworkMode": "karakeep_network" },
+    "Health": { "Status": "healthy", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "karakeep_network": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "7d12106c3b98c302671bb9711d7a86cafb4f6adfe911901b5fb4cedbfda442aa",
+          "EndpointID": "0cee8fcf814fa2b3b3011cfdeb22b0ebbf01ec1306ebaa4c9d473df51628cd0f",
+          "Gateway": "172.23.0.1",
+          "IPAddress": "172.23.0.4",
+          "MacAddress": "fa:86:93:4d:ec:03",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        },
+        "traefik-proxy": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "7c81b10f5d8422b4d2517c0253de75b21a86382203446754a97dd4b3aa790efb",
+          "EndpointID": "22a3deb3ac9e8094e2c99422d7e6744b49e27505172babb597adc28ce4ab191e",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.6",
+          "MacAddress": "ba:44:e9:29:c6:b2",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "karakeep_data",
+        "Source": "/var/lib/docker/volumes/karakeep_data/_data",
+        "Destination": "/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "d7346403bb168c0c764daf8db428d9774383006058015e760f6fb596f720fdb8",
+    "Names": ["/miniflux-miniflux-1"],
+    "Image": "miniflux/miniflux:latest",
+    "ImageID": "sha256:a1232ced97ff67e1e3ea2346efd6e780a5e266223f57a19b1b479a714db3f5bc",
+    "Command": "/usr/bin/miniflux",
+    "Created": 1789364048,
+    "Ports": [
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 8080,
+        "PublicPort": 9999,
+        "Type": "tcp"
+      },
+      { "IP": "::", "PrivatePort": 8080, "PublicPort": 9999, "Type": "tcp" }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "7fc0a51c5e309b114a5cf1252d6c9dff6ddd0579039039cdfb08375fcdae1953",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "db:service_healthy:false",
+      "com.docker.compose.image": "sha256:a1232ced97ff67e1e3ea2346efd6e780a5e266223f57a19b1b479a714db3f5bc",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "miniflux",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/03_life/miniflux/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/03_life/miniflux",
+      "com.docker.compose.service": "miniflux",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.description": "Miniflux is a minimalist and opinionated feed reader",
+      "org.opencontainers.image.documentation": "https://miniflux.app/docs/",
+      "org.opencontainers.image.licenses": "Apache-2.0",
+      "org.opencontainers.image.source": "https://github.com/miniflux/v2",
+      "org.opencontainers.image.title": "Miniflux",
+      "org.opencontainers.image.url": "https://miniflux.app",
+      "org.opencontainers.image.vendor": "Frédéric Guillot"
+    },
+    "State": "running",
+    "Status": "Up 9 hours",
+    "HostConfig": { "NetworkMode": "miniflux_default" },
+    "Health": { "Status": "none", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "miniflux_default": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "dad87614645b275f0f36c193024696001f9d8c31a7eab3db7385c7d8ad51b648",
+          "EndpointID": "bd3738a4f3bc16905aa05583500c0b4f2666d3bbb34706ad7ffa8b503cb8931d",
+          "Gateway": "172.26.0.1",
+          "IPAddress": "172.26.0.3",
+          "MacAddress": "42:de:c8:61:55:08",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": []
+  },
+  {
+    "Id": "dbeeff0c5bca240e384e0a0c772c2fa32e3b289adcc4c37284e4faa1eeb1e8a9",
+    "Names": ["/miniflux-db-1"],
+    "Image": "postgres:18",
+    "ImageID": "sha256:47fcd92135b73f3b3ba0761ef77c305c4263093b999559505afec11a7ed8cbdc",
+    "Command": "docker-entrypoint.sh postgres",
+    "Created": 1789364047,
+    "Ports": [{ "IP": "", "PrivatePort": 5432, "Type": "tcp" }],
+    "Labels": {
+      "com.docker.compose.config-hash": "3bd6581b161e32c80ad961e7642881105b3711bcab4b96b69c8623bd1af7e1fa",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:47fcd92135b73f3b3ba0761ef77c305c4263093b999559505afec11a7ed8cbdc",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "miniflux",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/03_life/miniflux/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/03_life/miniflux",
+      "com.docker.compose.service": "db",
+      "com.docker.compose.version": "5.1.3"
+    },
+    "State": "running",
+    "Status": "Up 9 hours (healthy)",
+    "HostConfig": { "NetworkMode": "miniflux_default" },
+    "Health": { "Status": "healthy", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "miniflux_default": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "dad87614645b275f0f36c193024696001f9d8c31a7eab3db7385c7d8ad51b648",
+          "EndpointID": "aade4f11a8bd9a9522efa151d8c776621eb7a2a4c2a8d4b3287774760d3fefb9",
+          "Gateway": "172.26.0.1",
+          "IPAddress": "172.26.0.2",
+          "MacAddress": "16:9f:6f:6e:af:45",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "miniflux_miniflux-db",
+        "Source": "/var/lib/docker/volumes/miniflux_miniflux-db/_data",
+        "Destination": "/var/lib/postgresql",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "f8cde93b1aeb56023699814f480b5588407c3666ae863ca5a309736f0eba5f90",
+    "Names": ["/socket-proxy"],
+    "Image": "lscr.io/linuxserver/socket-proxy:latest",
+    "ImageID": "sha256:3f81384c38c6ca15ecfcf5baaae2791499db2d47012463cadb4322790d399ccf",
+    "Command": "/docker-entrypoint.sh",
+    "Created": 1788872694,
+    "Ports": [
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 2375,
+        "PublicPort": 2375,
+        "Type": "tcp"
+      },
+      { "IP": "::", "PrivatePort": 2375, "PublicPort": 2375, "Type": "tcp" }
+    ],
+    "Labels": {
+      "build_version": "Linuxserver.io version:- 3.4.4-r0-ls97 Build-date:- 2026-09-07T23:06:04+00:00",
+      "com.docker.compose.config-hash": "0d44e3218b9da7ea6102dbcc43df46a94b7476aa63a57fc4a154e7f8e66c490e",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:3f81384c38c6ca15ecfcf5baaae2791499db2d47012463cadb4322790d399ccf",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "docker-socket-proxy",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/02_admin/docker-socket-proxy/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/02_admin/docker-socket-proxy",
+      "com.docker.compose.service": "socket-proxy",
+      "com.docker.compose.version": "5.1.3",
+      "maintainer": "thespad",
+      "org.opencontainers.image.authors": "linuxserver.io",
+      "org.opencontainers.image.created": "2026-09-07T23:06:04+00:00",
+      "org.opencontainers.image.description": "The Socket Proxy is a security-enhanced proxy which allows you to apply access rules to the Docker socket, limiting the attack surface for containers such as watchtower or Traefik that need to use it.",
+      "org.opencontainers.image.documentation": "https://docs.linuxserver.io/images/docker-socket-proxy",
+      "org.opencontainers.image.licenses": "GPL-3.0-only",
+      "org.opencontainers.image.ref.name": "661b780da46a36b8e187194337648683d3970119",
+      "org.opencontainers.image.revision": "661b780da46a36b8e187194337648683d3970119",
+      "org.opencontainers.image.source": "https://github.com/linuxserver/docker-socket-proxy",
+      "org.opencontainers.image.title": "Socket-proxy",
+      "org.opencontainers.image.url": "https://github.com/linuxserver/docker-socket-proxy/packages",
+      "org.opencontainers.image.vendor": "linuxserver.io",
+      "org.opencontainers.image.version": "3.4.4-r0-ls97"
+    },
+    "State": "running",
+    "Status": "Up 6 days",
+    "HostConfig": { "NetworkMode": "docker-socket-proxy_default" },
+    "Health": { "Status": "none", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "docker-socket-proxy_default": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "94afe85db222d3ade1b8c86e3e5a51fd04b2aae4bf8a0e33ba5a52c51f44a845",
+          "EndpointID": "e8e8a36a06ca8e391ba245eb9fa5b7adae4de3d9c005b41cf577e6e9d9b82a57",
+          "Gateway": "172.22.0.1",
+          "IPAddress": "172.22.0.2",
+          "MacAddress": "96:4d:b0:9f:49:83",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/var/run/docker.sock",
+        "Destination": "/var/run/docker.sock",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "a7e74c2c0cb0dd96f66a5cae47855a8b465606af81f6c0f7768bdad3bcb87905",
+    "Names": ["/vaultwarden"],
+    "Image": "vaultwarden/server:latest",
+    "ImageID": "sha256:2d85e1fec8277304da018e41ae3655933351291db61c4c1205b3a5ba3e150b2c",
+    "Command": "/start.sh",
+    "Created": 1788507403,
+    "Ports": [
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 80,
+        "PublicPort": 11001,
+        "Type": "tcp"
+      },
+      { "IP": "::", "PrivatePort": 80, "PublicPort": 11001, "Type": "tcp" }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "8995e43b0f02d1f278d0508e1a3f596880732b596b4ef2874ee0faf3833a4dc1",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:2d85e1fec8277304da018e41ae3655933351291db61c4c1205b3a5ba3e150b2c",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "vaultwarden",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/03_life/vaultwarden/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/03_life/vaultwarden",
+      "com.docker.compose.replace": "vaultwarden",
+      "com.docker.compose.service": "vaultwarden",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.created": "2026-08-22T12:10:03+00:00",
+      "org.opencontainers.image.description": "Unofficial Bitwarden compatible server written in Rust - 1.37.2",
+      "org.opencontainers.image.documentation": "https://github.com/dani-garcia/vaultwarden/wiki",
+      "org.opencontainers.image.licenses": "AGPL-3.0-only",
+      "org.opencontainers.image.revision": "46d71107f5094460dd5ecbe1dbac6e6c71e5189a",
+      "org.opencontainers.image.source": "https://github.com/dani-garcia/vaultwarden",
+      "org.opencontainers.image.url": "https://github.com/dani-garcia/vaultwarden",
+      "org.opencontainers.image.version": "1.37.2"
+    },
+    "State": "running",
+    "Status": "Up 10 days (healthy)",
+    "HostConfig": { "NetworkMode": "traefik-proxy" },
+    "Health": { "Status": "healthy", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "traefik-proxy": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "7c81b10f5d8422b4d2517c0253de75b21a86382203446754a97dd4b3aa790efb",
+          "EndpointID": "a08e7f8088a732dab8fceb87d2ff5452c0dac3dec8066ffff3fcaa57dfeed0b0",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.2",
+          "MacAddress": "26:b8:2e:ea:e9:2e",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/03_life/vaultwarden/vw-data",
+        "Destination": "/data",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "1fbdd422dc81993740cd9e663966b1500904d86ddd104a69486857c1de26d5b4",
+    "Names": ["/linkding-db"],
+    "Image": "postgres:17",
+    "ImageID": "sha256:edd2d5ab37b76ff298cf038784723e68fd1d2aabaa7fc77b114c562e3b332526",
+    "Command": "docker-entrypoint.sh postgres",
+    "Created": 1788507301,
+    "Ports": [{ "IP": "", "PrivatePort": 5432, "Type": "tcp" }],
+    "Labels": {
+      "com.docker.compose.config-hash": "5fc545519579e7f4f9626ac4ed4e9832fcf6f5233166975640c7b191043878ae",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:edd2d5ab37b76ff298cf038784723e68fd1d2aabaa7fc77b114c562e3b332526",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "linkding",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/03_life/linkding/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/03_life/linkding",
+      "com.docker.compose.replace": "linkding-db",
+      "com.docker.compose.service": "linkding-db",
+      "com.docker.compose.version": "5.1.3"
+    },
+    "State": "running",
+    "Status": "Up 10 days (healthy)",
+    "HostConfig": { "NetworkMode": "linkding_network" },
+    "Health": { "Status": "healthy", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "linkding_network": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "b13801b2492394bf3aee1bdea3219ec5365b422b25e83f3ce1425252860de3f8",
+          "EndpointID": "6914af9557cb3745f6dff202f94dd7e132e4cf97fd41dfd60bf3226e9649d5f4",
+          "Gateway": "172.24.0.1",
+          "IPAddress": "172.24.0.2",
+          "MacAddress": "32:bb:d8:47:6c:23",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "linkding_db",
+        "Source": "/var/lib/docker/volumes/linkding_db/_data",
+        "Destination": "/var/lib/postgresql/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "2896b28a396595a2a8c63ad5b14cb653bdf11f1b40a9f9751c7a5b448e92f3f9",
+    "Names": ["/linkding"],
+    "Image": "sissbruecker/linkding:latest",
+    "ImageID": "sha256:27abe1de6c66dadfcbe3b66973a49f2b85cbe127173ec06535610a68b5f9ab55",
+    "Command": "./bootstrap.sh",
+    "Created": 1788507301,
+    "Ports": [
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 9090,
+        "PublicPort": 9900,
+        "Type": "tcp"
+      },
+      { "IP": "::", "PrivatePort": 9090, "PublicPort": 9900, "Type": "tcp" }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "6b3b165342f240a52cd17737fad1f65026d92fa2b88c49d2bf7e14e6a27c7093",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:27abe1de6c66dadfcbe3b66973a49f2b85cbe127173ec06535610a68b5f9ab55",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "linkding",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/03_life/linkding/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/03_life/linkding",
+      "com.docker.compose.replace": "linkding",
+      "com.docker.compose.service": "linkding",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.source": "https://github.com/sissbruecker/linkding"
+    },
+    "State": "running",
+    "Status": "Up 10 days (healthy)",
+    "HostConfig": { "NetworkMode": "linkding_network" },
+    "Health": { "Status": "healthy", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "linkding_network": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "b13801b2492394bf3aee1bdea3219ec5365b422b25e83f3ce1425252860de3f8",
+          "EndpointID": "f85af289b1cb21377b383fc91c650b330f3652eae535644fea94bf9fb9018af5",
+          "Gateway": "172.24.0.1",
+          "IPAddress": "172.24.0.3",
+          "MacAddress": "ba:d9:87:33:51:d4",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        },
+        "traefik-proxy": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "7c81b10f5d8422b4d2517c0253de75b21a86382203446754a97dd4b3aa790efb",
+          "EndpointID": "d91e7e2d115c8eb2159474b91b1183525a60cd689009e657e983a2957d525c01",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.7",
+          "MacAddress": "66:c0:e5:6a:5b:a0",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "linkding_data",
+        "Source": "/var/lib/docker/volumes/linkding_data/_data",
+        "Destination": "/etc/linkding/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "38979b6a8836c6bf05c89f047069db1dcd6c5f15de555effbdb85ac2330659ec",
+    "Names": ["/karakeep-chrome-1"],
+    "Image": "gcr.io/zenika-hub/alpine-chrome:123",
+    "ImageID": "sha256:f2495375925ad965d08be4a1c8c0de2db842234fb3724abc32143c5c614bc4c1",
+    "Command": "chromium-browser --headless --no-sandbox --disable-gpu --disable-dev-shm-usage --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222 --hide-scrollbars",
+    "Created": 1788507263,
+    "Ports": [],
+    "Labels": {
+      "com.docker.compose.config-hash": "5022f79a34d4b61a4fa54de304c27cadc7278d7905f94b5b22d9d37cff8fb346",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:f2495375925ad965d08be4a1c8c0de2db842234fb3724abc32143c5c614bc4c1",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "karakeep",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/03_life/karakeep/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/03_life/karakeep",
+      "com.docker.compose.replace": "chrome-1",
+      "com.docker.compose.service": "chrome",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.created": "2024-04-18T04:27:54.185Z",
+      "org.opencontainers.image.description": "Chrome Headless docker images built upon alpine official image",
+      "org.opencontainers.image.documentation": "https://github.com/Zenika/alpine-chrome/blob/master/README",
+      "org.opencontainers.image.licenses": "Apache-2.0",
+      "org.opencontainers.image.revision": "ab0d418bcbc81e1254bdb7875ec06753e3fd68c5",
+      "org.opencontainers.image.source": "https://github.com/Zenika/alpine-chrome",
+      "org.opencontainers.image.title": "alpine-chrome",
+      "org.opencontainers.image.url": "https://github.com/Zenika/alpine-chrome",
+      "org.opencontainers.image.vendor": "Zenika",
+      "org.opencontainers.image.version": "latest"
+    },
+    "State": "running",
+    "Status": "Up 10 days",
+    "HostConfig": { "NetworkMode": "karakeep_network" },
+    "Health": { "Status": "none", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "karakeep_network": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "7d12106c3b98c302671bb9711d7a86cafb4f6adfe911901b5fb4cedbfda442aa",
+          "EndpointID": "b276d1f632c559bdc57e6b734df8f6bb7bd88ca669a05eec0e37fdf9368c6fc3",
+          "Gateway": "172.23.0.1",
+          "IPAddress": "172.23.0.2",
+          "MacAddress": "5a:41:5e:4b:45:45",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": []
+  },
+  {
+    "Id": "198c52f72e30eaa6a1681aa5ed5271c83f378a7bcccdffc5ee0c2df930815586",
+    "Names": ["/karakeep-meilisearch-1"],
+    "Image": "getmeili/meilisearch:v1.13.3",
+    "ImageID": "sha256:38f41844b9a1aa76983845f5cce24ef78fcc89f4138edebe05664d987ef39982",
+    "Command": "tini -- /bin/sh -c /bin/meilisearch",
+    "Created": 1788507263,
+    "Ports": [{ "IP": "", "PrivatePort": 7700, "Type": "tcp" }],
+    "Labels": {
+      "com.docker.compose.config-hash": "98ed2dec60ea39eb684bc33aca7ecbdc32a01f826112306e3959fee07a53af65",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:38f41844b9a1aa76983845f5cce24ef78fcc89f4138edebe05664d987ef39982",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "karakeep",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/03_life/karakeep/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/03_life/karakeep",
+      "com.docker.compose.replace": "meilisearch-1",
+      "com.docker.compose.service": "meilisearch",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.source": "https://github.com/meilisearch/meilisearch"
+    },
+    "State": "running",
+    "Status": "Up 10 days",
+    "HostConfig": { "NetworkMode": "karakeep_network" },
+    "Health": { "Status": "none", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "karakeep_network": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "7d12106c3b98c302671bb9711d7a86cafb4f6adfe911901b5fb4cedbfda442aa",
+          "EndpointID": "cd6494dfa553da384863aa77022b4c899ac586522b1794edb00d20650c4c81af",
+          "Gateway": "172.23.0.1",
+          "IPAddress": "172.23.0.3",
+          "MacAddress": "a2:a7:e8:8c:5b:26",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "karakeep_meilisearch",
+        "Source": "/var/lib/docker/volumes/karakeep_meilisearch/_data",
+        "Destination": "/meili_data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  },
+  {
+    "Id": "6fbfb27ec6036af3b7388baff95491191b2c62c79fdac25b512b3ae81ae05c01",
+    "Names": ["/traefik"],
+    "Image": "traefik",
+    "ImageID": "sha256:d153b8638c49ce45b72eef1f4bda5f9711ffad68416da1cd8da34b44ca980bdb",
+    "Command": "/entrypoint.sh traefik",
+    "Created": 1788177120,
+    "Ports": [
+      { "IP": "0.0.0.0", "PrivatePort": 443, "PublicPort": 443, "Type": "tcp" },
+      { "IP": "::", "PrivatePort": 443, "PublicPort": 443, "Type": "tcp" },
+      { "IP": "0.0.0.0", "PrivatePort": 80, "PublicPort": 80, "Type": "tcp" },
+      { "IP": "::", "PrivatePort": 80, "PublicPort": 80, "Type": "tcp" },
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 8080,
+        "PublicPort": 8080,
+        "Type": "tcp"
+      },
+      { "IP": "::", "PrivatePort": 8080, "PublicPort": 8080, "Type": "tcp" }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "8c31ef3eb32f8e7d4dadbad74769086975c64c39ba8aaa0bbebd9f41f6d65770",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:d153b8638c49ce45b72eef1f4bda5f9711ffad68416da1cd8da34b44ca980bdb",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "traefik-lan",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/02_admin/traefik-lan/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/02_admin/traefik-lan",
+      "com.docker.compose.replace": "traefik",
+      "com.docker.compose.service": "traefik",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.description": "A modern reverse-proxy",
+      "org.opencontainers.image.documentation": "https://docs.traefik.io",
+      "org.opencontainers.image.source": "https://github.com/traefik/traefik",
+      "org.opencontainers.image.title": "Traefik",
+      "org.opencontainers.image.url": "https://traefik.io",
+      "org.opencontainers.image.vendor": "Traefik Labs",
+      "org.opencontainers.image.version": "v3.7.11",
+      "traefik.enable": "true",
+      "traefik.http.middlewares.traefik-auth.basicauth.users": "admin:$2y$05$EWL251fqvs3eH63eOETh2uvAoXhrsViP.br6w2J6TKG9i2Gc0DDSa",
+      "traefik.http.routers.traefik-secure.entrypoints": "https",
+      "traefik.http.routers.traefik-secure.middlewares": "traefik-auth",
+      "traefik.http.routers.traefik-secure.rule": "Host(`traefik.ghostcastle.space`)",
+      "traefik.http.routers.traefik-secure.service": "api@internal",
+      "traefik.http.routers.traefik-secure.tls": "true",
+      "traefik.http.routers.traefik-secure.tls.certresolver": "cloudflare",
+      "traefik.http.routers.traefik-secure.tls.domains[0].main": "ghostcastle.space",
+      "traefik.http.routers.traefik-secure.tls.domains[0].sans": "*.ghostcastle.space,*.coder.ghostcastle.space,*.vps.ghostcastle.space"
+    },
+    "State": "running",
+    "Status": "Up 10 days",
+    "HostConfig": { "NetworkMode": "traefik-proxy" },
+    "Health": { "Status": "none", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "traefik-proxy": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "7c81b10f5d8422b4d2517c0253de75b21a86382203446754a97dd4b3aa790efb",
+          "EndpointID": "cd2c3b045214d5d7e69f5d55a5666971807ddd49a252654ba5aa4ec4037a0971",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.4",
+          "MacAddress": "de:50:b5:58:62:4f",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/02_admin/traefik-lan/certs",
+        "Destination": "/certs",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/02_admin/traefik-lan/traefik",
+        "Destination": "/etc/traefik",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/02_admin/traefik-lan/cf-token",
+        "Destination": "/run/secrets/cf-token",
+        "Mode": "",
+        "RW": false,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/02_admin/traefik-lan/log",
+        "Destination": "/var/log",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/var/run/docker.sock",
+        "Destination": "/var/run/docker.sock",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "251709e828825783cb275f626b327a25c7895ef64605245ada7fcf5e09322c75",
+    "Names": ["/local-content-share"],
+    "Image": "tanq16/local-content-share:main",
+    "ImageID": "sha256:9a1898ca2b605343420fa0b686d739b222e16bd45dff495b7879a3229bd30443",
+    "Command": "/app/local-content-share",
+    "Created": 1788176167,
+    "Ports": [
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 8080,
+        "PublicPort": 9901,
+        "Type": "tcp"
+      },
+      { "IP": "::", "PrivatePort": 8080, "PublicPort": 9901, "Type": "tcp" }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "3c311c5df5472388c49d9ae502e005efc55e98e83fda37a978c734a2deb6876a",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:9a1898ca2b605343420fa0b686d739b222e16bd45dff495b7879a3229bd30443",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "local-content-share",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/03_life/local-content-share/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/03_life/local-content-share",
+      "com.docker.compose.replace": "local-content-share",
+      "com.docker.compose.service": "contentshare",
+      "com.docker.compose.version": "5.1.3"
+    },
+    "State": "running",
+    "Status": "Up 10 days",
+    "HostConfig": { "NetworkMode": "traefik-proxy" },
+    "Health": { "Status": "none", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "traefik-proxy": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "7c81b10f5d8422b4d2517c0253de75b21a86382203446754a97dd4b3aa790efb",
+          "EndpointID": "ede8d0a62719fee7ecf8b81114625d546556b1d681797bdf4ae51033a20869c6",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.3",
+          "MacAddress": "3a:ce:e2:51:13:e8",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/03_life/local-content-share/data",
+        "Destination": "/app/data",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "572f5330d73cc2a8a88463c352e5eb595f8734ceca0d0978df4d8c43df48b7b2",
+    "Names": ["/pihole"],
+    "Image": "pihole/pihole:latest",
+    "ImageID": "sha256:2c4eea274ad064111ce83e27c7456f143120dfd1f75f9d37160ce099b3238e21",
+    "Command": "start.sh",
+    "Created": 1787910271,
+    "Ports": [
+      { "IP": "0.0.0.0", "PrivatePort": 53, "PublicPort": 53, "Type": "udp" },
+      { "IP": "::", "PrivatePort": 53, "PublicPort": 53, "Type": "udp" },
+      { "IP": "", "PrivatePort": 67, "Type": "udp" },
+      { "IP": "0.0.0.0", "PrivatePort": 80, "PublicPort": 7489, "Type": "tcp" },
+      { "IP": "::", "PrivatePort": 80, "PublicPort": 7489, "Type": "tcp" },
+      { "IP": "", "PrivatePort": 123, "Type": "udp" },
+      {
+        "IP": "0.0.0.0",
+        "PrivatePort": 443,
+        "PublicPort": 7443,
+        "Type": "tcp"
+      },
+      { "IP": "::", "PrivatePort": 443, "PublicPort": 7443, "Type": "tcp" },
+      { "IP": "0.0.0.0", "PrivatePort": 53, "PublicPort": 53, "Type": "tcp" },
+      { "IP": "::", "PrivatePort": 53, "PublicPort": 53, "Type": "tcp" }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "8948d2f52e9dc89838d1e703026ba65e7e5de290ca1570a89c5984fa80551568",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "dhcphelper:service_started:false",
+      "com.docker.compose.image": "sha256:2c4eea274ad064111ce83e27c7456f143120dfd1f75f9d37160ce099b3238e21",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "01_dns",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/01_dns/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/01_dns",
+      "com.docker.compose.replace": "pihole",
+      "com.docker.compose.service": "pihole",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.created": "2026-04-03T17:21:36.353Z",
+      "org.opencontainers.image.description": "The official Pi-hole Docker image from pi-hole.net",
+      "org.opencontainers.image.licenses": "NOASSERTION",
+      "org.opencontainers.image.revision": "efe4c7fc1fcc0cc82ca7660d0d85f7803c79bdc5",
+      "org.opencontainers.image.source": "https://github.com/pi-hole/docker-pi-hole",
+      "org.opencontainers.image.title": "docker-pi-hole",
+      "org.opencontainers.image.url": "https://github.com/pi-hole/docker-pi-hole",
+      "org.opencontainers.image.version": "2026.04.0"
+    },
+    "State": "running",
+    "Status": "Up 10 days (healthy)",
+    "HostConfig": { "NetworkMode": "dns_resolver" },
+    "Health": { "Status": "healthy", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "dns_resolver": {
+          "IPAMConfig": { "IPv4Address": "172.20.53.2" },
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "13f37ae4de4fa8357d8e1b12883b78459e6b70e509a95454cd9554f64cb4edb7",
+          "EndpointID": "a8992434e0dc1a752c033570b589829b9ba303ff56c3218385608cb452e50a71",
+          "Gateway": "172.20.53.1",
+          "IPAddress": "172.20.53.2",
+          "MacAddress": "3a:58:5e:db:63:75",
+          "IPPrefixLen": 24,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/01_dns/etc-dnsmasq.d",
+        "Destination": "/etc/dnsmasq.d",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/01_dns/etc-pihole",
+        "Destination": "/etc/pihole",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "345950e2341672baf9b7f624fcc0c94136c2e66b73b2ee8c6b0be653ad21138b",
+    "Names": ["/beszel-agent"],
+    "Image": "henrygd/beszel-agent",
+    "ImageID": "sha256:f258868bff1f3dfd5c2bc3979fae0b6a58728f1436798e125b51161397822ffa",
+    "Command": "/agent",
+    "Created": 1785742681,
+    "Ports": [],
+    "Labels": {
+      "com.docker.compose.config-hash": "0a7f29edb902ba71cb4c619e1808b8c597af4fa15d8e98637b4f30cb81e7d0b5",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:f258868bff1f3dfd5c2bc3979fae0b6a58728f1436798e125b51161397822ffa",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "beszel-agent",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/02_admin/beszel-agent/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/02_admin/beszel-agent",
+      "com.docker.compose.service": "beszel-agent",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.created": "2026-04-05T20:20:29.276Z",
+      "org.opencontainers.image.description": "Lightweight server monitoring with historical data, docker stats, and alerts.",
+      "org.opencontainers.image.licenses": "MIT",
+      "org.opencontainers.image.revision": "6e3fd90834309213aca32f2ff5fb0b027661c39a",
+      "org.opencontainers.image.source": "https://github.com/henrygd/beszel",
+      "org.opencontainers.image.title": "beszel",
+      "org.opencontainers.image.url": "https://github.com/henrygd/beszel",
+      "org.opencontainers.image.version": "0.18.7"
+    },
+    "State": "running",
+    "Status": "Up 10 days",
+    "HostConfig": { "NetworkMode": "host" },
+    "Health": { "Status": "none", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "host": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "6606e8a1e0cf0310f1694a6a6029eca95afb3870729de250a7a5d94f150d59ae",
+          "EndpointID": "884cbb7edc6f9229a9677560c09cfa8d0820f96430d0ec16c1ed6b6b73882f69",
+          "Gateway": "",
+          "IPAddress": "",
+          "MacAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/02_admin/beszel-agent/beszel_agent_data",
+        "Destination": "/var/lib/beszel-agent",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/var/run/docker.sock",
+        "Destination": "/var/run/docker.sock",
+        "Mode": "ro",
+        "RW": false,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "3d8cc076944620f2e6b99451c11018313bb09d83fee5832d2acca3ff5167af5f",
+    "Names": ["/unbound-rpi"],
+    "Image": "mvance/unbound-rpi:latest",
+    "ImageID": "sha256:bacfcbef5b9e0a023c8a52dcb5fcdd556bb5c3682ade4483035e9d4c00ecbcfb",
+    "Command": "/unbound.sh",
+    "Created": 1784445185,
+    "Ports": [
+      { "IP": "0.0.0.0", "PrivatePort": 53, "PublicPort": 5353, "Type": "tcp" },
+      { "IP": "::", "PrivatePort": 53, "PublicPort": 5353, "Type": "tcp" },
+      { "IP": "0.0.0.0", "PrivatePort": 53, "PublicPort": 5353, "Type": "udp" },
+      { "IP": "::", "PrivatePort": 53, "PublicPort": 5353, "Type": "udp" },
+      { "IP": "", "PrivatePort": 5353, "Type": "tcp" }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "36eea8a71da49092252998ae9dbb67036cf8696c0969c687d9074b2dfc5368c5",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:bacfcbef5b9e0a023c8a52dcb5fcdd556bb5c3682ade4483035e9d4c00ecbcfb",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "01_dns",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/01_dns/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/01_dns",
+      "com.docker.compose.service": "unbound",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.description": "a validating, recursive, and caching DNS resolver",
+      "org.opencontainers.image.licenses": "MIT",
+      "org.opencontainers.image.source": "https://github.com/MatthewVance/unbound-docker-rpi",
+      "org.opencontainers.image.title": "mvance/unbound-rpi",
+      "org.opencontainers.image.url": "https://github.com/MatthewVance/unbound-docker-rpi",
+      "org.opencontainers.image.vendor": "Matthew Vance",
+      "org.opencontainers.image.version": ""
+    },
+    "State": "running",
+    "Status": "Up 10 days (healthy)",
+    "HostConfig": { "NetworkMode": "dns_resolver" },
+    "Health": { "Status": "healthy", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "dns_resolver": {
+          "IPAMConfig": { "IPv4Address": "172.20.53.3" },
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "13f37ae4de4fa8357d8e1b12883b78459e6b70e509a95454cd9554f64cb4edb7",
+          "EndpointID": "5e73fff5289f9b2f700ce6bf67c609a99743d8296f287857d15e73ad8e9cae64",
+          "Gateway": "172.20.53.1",
+          "IPAddress": "172.20.53.3",
+          "MacAddress": "86:db:25:ad:20:82",
+          "IPPrefixLen": 24,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/01_dns/unbound/a-records",
+        "Destination": "/opt/unbound/etc/unbound/a-records",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/01_dns/unbound/forward-records.conf",
+        "Destination": "/opt/unbound/etc/unbound/forward-records.conf",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/01_dns/unbound/unbound.conf",
+        "Destination": "/opt/unbound/etc/unbound/unbound.conf",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/01_dns/unbound/unbound.conf.d",
+        "Destination": "/opt/unbound/etc/unbound/unbound.conf.d",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      },
+      {
+        "Type": "bind",
+        "Source": "/home/powder/docker-stacks/01_dns/unbound/unbound.log",
+        "Destination": "/opt/unbound/etc/unbound/unbound.log",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": "rprivate"
+      }
+    ]
+  },
+  {
+    "Id": "7f758a035c3208314dc510d97944492cdddbcb69c706e6e6ffbbac0747a3746e",
+    "Names": ["/dhcp-helper"],
+    "Image": "01_dns-dhcphelper",
+    "ImageID": "sha256:a4bc29b69203b5c807425935ea0682db03280d9d74744651ca23aa82feb74cc3",
+    "Command": "dhcp-helper -n -s 172.20.53.2",
+    "Created": 1784445185,
+    "Ports": [],
+    "Labels": {
+      "com.docker.compose.config-hash": "b0532884c09937619ec2cf5423a5fbe40950264bd34ecdc3ef667eb63bc0ff22",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:a4bc29b69203b5c807425935ea0682db03280d9d74744651ca23aa82feb74cc3",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "01_dns",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/01_dns/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/01_dns",
+      "com.docker.compose.service": "dhcphelper",
+      "com.docker.compose.version": "5.1.3"
+    },
+    "State": "running",
+    "Status": "Up 10 days",
+    "HostConfig": { "NetworkMode": "host" },
+    "Health": { "Status": "none", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "host": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "6606e8a1e0cf0310f1694a6a6029eca95afb3870729de250a7a5d94f150d59ae",
+          "EndpointID": "0fc87e5dc7aaa8374a0fc88816599341890aaad9d6e2cec7c0810d403a5b93d2",
+          "Gateway": "",
+          "IPAddress": "",
+          "MacAddress": "",
+          "IPPrefixLen": 0,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": []
+  },
+  {
+    "Id": "c5c6f16067f8805c2e82babddaa751164a251fcb29f4d6bacb82518034fe1413",
+    "Names": ["/termix"],
+    "Image": "ghcr.io/lukegus/termix:latest",
+    "ImageID": "sha256:ce1bccf30f839c165633501704f5fa92878cffcc2abf05faab039500543097d7",
+    "Command": "docker-entrypoint.sh /entrypoint.sh",
+    "Created": 1777030986,
+    "Ports": [
+      { "IP": "", "PrivatePort": 30001, "Type": "tcp" },
+      { "IP": "", "PrivatePort": 30002, "Type": "tcp" },
+      { "IP": "", "PrivatePort": 30003, "Type": "tcp" },
+      { "IP": "", "PrivatePort": 30004, "Type": "tcp" },
+      { "IP": "", "PrivatePort": 30005, "Type": "tcp" },
+      { "IP": "", "PrivatePort": 30006, "Type": "tcp" },
+      { "IP": "", "PrivatePort": 8080, "Type": "tcp" }
+    ],
+    "Labels": {
+      "com.docker.compose.config-hash": "ffaf843861e0039b3597c8f8d7f7a7bd7468df2d34aa4a26afa447d1130d2bbd",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:ce1bccf30f839c165633501704f5fa92878cffcc2abf05faab039500543097d7",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "termix",
+      "com.docker.compose.project.config_files": "/home/powder/docker-stacks/02_admin/termix/docker-compose.yml",
+      "com.docker.compose.project.working_dir": "/home/powder/docker-stacks/02_admin/termix",
+      "com.docker.compose.service": "termix",
+      "com.docker.compose.version": "5.1.3",
+      "org.opencontainers.image.created": "24805306734",
+      "org.opencontainers.image.revision": "c67d914e61ef9fc6e97347337ea59ffa9196d560",
+      "org.opencontainers.image.source": "https://github.com/Termix-SSH/Termix",
+      "traefik.docker.network": "traefik-proxy",
+      "traefik.enable": "true",
+      "traefik.http.routers.termix.entrypoints": "https",
+      "traefik.http.routers.termix.rule": "Host(`termix.ghostcastle.space`)",
+      "traefik.http.routers.termix.tls": "true",
+      "traefik.http.services.termix.loadbalancer.server.port": "8080"
+    },
+    "State": "running",
+    "Status": "Up 10 days (healthy)",
+    "HostConfig": { "NetworkMode": "traefik-proxy" },
+    "Health": { "Status": "healthy", "FailingStreak": 0 },
+    "NetworkSettings": {
+      "Networks": {
+        "traefik-proxy": {
+          "IPAMConfig": null,
+          "Links": null,
+          "Aliases": null,
+          "DriverOpts": null,
+          "GwPriority": 0,
+          "NetworkID": "7c81b10f5d8422b4d2517c0253de75b21a86382203446754a97dd4b3aa790efb",
+          "EndpointID": "20901840c38af1157d0be9d4aad51aef669f6135253fb4db68710fc83a37ba7a",
+          "Gateway": "172.18.0.1",
+          "IPAddress": "172.18.0.5",
+          "MacAddress": "fa:53:02:68:55:8b",
+          "IPPrefixLen": 16,
+          "IPv6Gateway": "",
+          "GlobalIPv6Address": "",
+          "GlobalIPv6PrefixLen": 0,
+          "DNSNames": null
+        }
+      }
+    },
+    "Mounts": [
+      {
+        "Type": "volume",
+        "Name": "termix_termix-data",
+        "Source": "/var/lib/docker/volumes/termix_termix-data/_data",
+        "Destination": "/app/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ]
+  }
+]
