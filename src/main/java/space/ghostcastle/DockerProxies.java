@@ -1,23 +1,24 @@
 package space.ghostcastle;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import java.net.URI;
-import java.lang.Boolean;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
 
 public class DockerProxies {
     private List<String> dockerProxies = new ArrayList<>();
@@ -31,7 +32,7 @@ public class DockerProxies {
         try (Stream<String> lines = Files.lines(socketProxiesFile)) {
             lines.forEach(this.dockerProxies::add);
         } catch (IOException e) {
-            System.err.println("Could not find .socket-proxies,\nplease create a .socket-proxies to declare your docker socket proxies to use");
+            System.err.println("Could not find .socket-proxies,\nplease create a .socket-proxies file to declare your docker socket proxies to use");
             System.exit(1);
         }
     }
@@ -43,27 +44,59 @@ public class DockerProxies {
         return instance;
     }
 
-    public List<Map<String, Object>> getContainers() throws Exception {
-        List<Map<String, Object>> containers = new ArrayList<>();
+    public ArrayNode getContainers() throws Exception {
+        ObjectMapper yamlMapper = new ObjectMapper(
+            new YAMLFactory()
+        );
+        ArrayNode containers = yamlMapper.createArrayNode();
 
-        for (String proxy : dockerProxies) {
-            HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(proxy + path))
-            .GET()
-            .build();
+        for (String proxy : this.dockerProxies) {
 
-            String responseBody = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
+            try {
+                
+                HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(proxy + path))
+                .GET()
+                .build();
 
-            JsonNode rootNode = map.readTree(responseBody);
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            for (JsonNode container : rootNode) {
-                String isTraefikEnabled = container.path("Labels").path("traefik.enable").asText();
-                System.out.println(Boolean.parseBoolean(isTraefikEnabled));
+                if (response.statusCode() != 200) {
+                    continue;
+                }
+
+                JsonNode rootNode = map.readTree(response.body());
+
+                Path filePath = Paths.get("response.json");
+
+                // try {
+                //     Files.writeString(filePath, rootNode.toPrettyString());
+                //     return 
+                // }
+                // for (JsonNode container : rootNode) {
+                //     Boolean isTraefikEnabled = container.path("Labels").path("traefik.enable").asBoolean();
+                //     System.out.println(isTraefikEnabled);
+                // }
+                
+                for (JsonNode container : rootNode) {
+                    ObjectNode selectedKeys = yamlMapper.createObjectNode();
+                    selectedKeys.put("Id", container.path("Id").asText());
+                    selectedKeys.set("Names", container.path("Names"));
+                    selectedKeys.set("Ports", container.path("Ports"));
+                    selectedKeys.set("Labels", container.path("Labels"));
+                    containers.add(selectedKeys);
+                }
+                // String yamlString = yamlMapper.writeValueAsString(containers);
+                // Files.writeString(Path.of("container" + ".yaml"), yamlString);
+                return containers;
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                return containers;
             }
-
         }
 
+        return  containers;
 
-        return containers;
     }
 }
