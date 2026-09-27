@@ -16,7 +16,7 @@
             "name": "App",
             "request": "launch",
             "mainClass": "space.ghostcastle.App",
-            "projectName": "traefik-sync"
+            "projectName": "traefik-sync",
         }
     ]
 }

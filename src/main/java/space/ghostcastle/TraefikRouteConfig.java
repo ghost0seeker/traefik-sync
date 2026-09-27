@@ -23,22 +23,7 @@ public class TraefikRouteConfig {
     private ObjectMapper mapper;
     private Boolean isRouterValid = false;
     private Map<String, String> jsonMap;
-    private Router router;
-
-    private static List<String> runRegex(String regex, String input) {
-        List<String> matchedStrings = new ArrayList<>();
-
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(input);
-
-        if (matcher.matches()) {
-            for (int a = 1; a <= matcher.groupCount(); a++){
-                matchedStrings.add(matcher.group(a));
-            } 
-        }
-
-        return matchedStrings;
-    }
+    public Router router;
 
     public Boolean isValid() {
         return this.isRouterValid;
@@ -82,8 +67,9 @@ public class TraefikRouteConfig {
                 if (label.contains("traefik.enable")) {
                     this.enabled = Boolean.parseBoolean(mandatoryKeys.get(label));
                 } else if (label.contains("traefik.http.routers")) {
+                    String[] splitLabel = label.split("\\.");
 
-                    this.name = label.split(".")[3];
+                    this.name = splitLabel[3];
 
                     if (label.contains("entrypoints")) {
                         this.entryPoints = mandatoryKeys.get(label);
@@ -94,7 +80,8 @@ public class TraefikRouteConfig {
                     }
                 } else if (label.contains("traefik.http.services")) {
                     this.service = new Service();
-                    this.service.name = label.split(".")[3];
+                    String[] splitLabel = label.split("\\.");
+                    this.service.name = splitLabel[3];
                     this.service.loadBalancer = mandatoryKeys.get(label);
                 }
             });
@@ -113,62 +100,11 @@ public class TraefikRouteConfig {
         List<String> routerKeys = routerKeySet.stream()
                                                 .filter(s -> s.startsWith("traefik"))
                                                 .toList();
-
-        
+        Boolean isTrue = routerKeys.isEmpty();
         if (!routerKeys.isEmpty()) {
-            for (String routerKey : routerKeys) {
-                if (!routerKeys.contains("traefik")) continue;
-                String[] splitByDot = routerKey.split("\\.");
-                switch (splitByDot[1]) {
-                    case "enable":
-                        Router.mandatoryKeys.put(routerKey, node.path(routerKey).asText());
-                        break;
-                    case "http":
-                        switch (splitByDot[2]) {
-                            case "routers":
-                                switch (splitByDot[4]) {
-                                    case "entrypoints":
-                                    case "rule":
-                                    case "tls":
-                                        Router.mandatoryKeys.put(routerKey, node.path(routerKey).asText());
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                break;
-                            case "services":
-                                switch (splitByDot[4]) {
-                                    case "loadbalancer":
-                                        Router.mandatoryKeys.put(routerKey, node.path(routerKey).asText());
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            routerKeys.forEach(k -> Router.mandatoryKeys.put(k, map.get(k)));
+            this.isRouterValid = true;
         }
-
-        HashSet<String> routerKeyState = new HashSet<>(Router.mandatoryKeys.values());
-        
-        if (routerKeyState.contains(null)) {
-            isRouterValid = false;
-        } else {
-            jsonMap = map;
-            isRouterValid = true;
-        }
-
-        if (!isRouterValid) {
-            throw new InvalidJsonNodeException("JsonNode is not valid structure to build router configuration.");
-        }
-
-        }
-
     }
 
     public void declare() throws InvalidJsonNodeException {
@@ -178,7 +114,25 @@ public class TraefikRouteConfig {
         }
 
         this.router = new Router();
+    }
 
-        
+    public Map<String, String> getConfig() {
+        Map<String, String> config = new HashMap<>();
+
+        String defaultMap = "traefik.http.";
+        String routerMap = defaultMap + "routers." + this.router.name;
+        String servicesMap = defaultMap + "services." + this.router.service.name;
+
+        config.put(routerMap + ".entrypoints", this.router.entryPoints);
+        config.put(routerMap + ".rule", this.router.rule);
+        config.put(routerMap + ".tls", this.router.tls);
+        config.put(servicesMap + ".loadBalancer.servers[0].url", this.router.service.loadBalancer);
+
+        return config;
+    }
+
+    @Override
+    public String toString() {
+        return this.router.name;
     }
 }
