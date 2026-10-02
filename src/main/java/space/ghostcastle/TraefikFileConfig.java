@@ -1,52 +1,26 @@
 package space.ghostcastle;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
 
 import space.ghostcastle.Exceptions.InvalidJsonNodeException;
+import space.ghostcastle.Records.FileConfig.*;
+import space.ghostcastle.Records.FileConfig.HTTPConfig.*;
+import space.ghostcastle.Records.FileConfig.HTTPConfig.Service.*;
+import space.ghostcastle.Records.FileConfig.HTTPConfig.Service.LoadBalancer.*;
+import space.ghostcastle.Records.FileConfig.HTTPConfig.Router.*;
 
 public class TraefikFileConfig {
 
-    record FileConfig(HTTPConfig http) {
+    private List<Router> routers = new ArrayList<>();
 
-        record HTTPConfig(
-
-            Map<String, Router> routers, Map<String, Service> services) {
-
-                record Router(
-                    List<String> entryPoints,
-                    String rule,
-                    TLS tls,
-                    Service service
-                ) {
-                    record TLS(){};
-                }
-
-                record Service(
-                    LoadBalancer loadBalancer
-                ) {
-                    record LoadBalancer(List<Server> servers) {
-                        record Server(String url) {}
-                    }
-                }
-
-        }
-    }
-
-    public static ObjectMapper mapper = new ObjectMapper();
+    private static ObjectMapper mapper = new ObjectMapper();
 
     public void valideKeys(JsonNode node) throws InvalidJsonNodeException {
         Map<String, String> map = mapper.convertValue(
@@ -61,15 +35,29 @@ public class TraefikFileConfig {
                                                 .filter(s -> s.matches("traefik\\.http\\.routers\\.[^.]+\\.service"))
                                                 .filter(s -> s.matches("traefik\\.http\\.services\\.[^.]+\\.loadBalancer"))
                                                 .toList();
-        Boolean isEmpty = routerKeys.isEmpty();
+        boolean isEmpty = routerKeys.isEmpty();
         if (!isEmpty) {
-            /*
-                create the record and save it
-            */
+           List<String> entryPoints = new ArrayList<>();
+           StringBuilder rule = new StringBuilder();
+           StringBuilder serviceStr = new StringBuilder();
+           StringBuilder routerName = new StringBuilder();
+           StringBuilder serviceName = new StringBuilder();
+           StringBuilder tlsStr = new StringBuilder();
+           List<String> servers = new ArrayList<>();
 
+           for ( String key : routerKeys) {
             
+           }
+
+            Server server = new Server(servers.get(0));
+            LoadBalancer loadBalancer = new LoadBalancer(List.of(server));
+            Service service = new Service(loadBalancer);
+            Router router;
+            if (Boolean.parseBoolean(tlsStr.toString())) {
+                TLS tls = new TLS();
+                router = new Router(entryPoints, rule.toString(), tls, service);
+                routers.add(router);
+            }
         }
-
-
     }
 }
