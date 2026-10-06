@@ -32,3 +32,4 @@ target
 .socket-proxies
 
 .routeConfigs
+.*.json

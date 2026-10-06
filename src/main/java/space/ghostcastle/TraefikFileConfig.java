@@ -9,6 +9,8 @@ package space.ghostcastle;
  */
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,8 +22,10 @@ import java.util.regex.Matcher;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import space.ghostcastle.Exceptions.InvalidJsonNodeException;
+import space.ghostcastle.Records.FileConfig;
 import space.ghostcastle.Records.FileConfig.HTTPConfig;
 import space.ghostcastle.Records.FileConfig.HTTPConfig.Router;
 import space.ghostcastle.Records.FileConfig.HTTPConfig.Router.TLS;
@@ -32,13 +36,23 @@ import space.ghostcastle.Records.FileConfig.HTTPConfig.Service.LoadBalancer.Serv
 
 public class TraefikFileConfig {
 
-    public static List<HTTPConfig> configs = new ArrayList<>();
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
 
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private final Pattern routerNameRegex = Pattern.compile("traefik\\.http\\.routers\\.([a-zA-Z0-9-]+)\\..+");
+    private Matcher routerNameMatcher;
+    private StringBuilder routerNameBuilder = new StringBuilder();
 
-    private static List<String> nullKeys;
+    private final Pattern serviceNameRegex = Pattern.compile("traefik\\.http\\.services\\.([a-zA-Z0-9-]+)\\..+");
+    private Matcher serviceNameMatcher;
+    private StringBuilder serviceNameBuilder = new StringBuilder();
 
-    private static Map<String, StringBuilder> mandatoryLabels = new HashMap<>(Map.of(
+    private final Pattern labelRegex = Pattern.compile("entryp?P?oints|rule|tls");
+    private Matcher labelMatcher;
+
+    private List<String> nullKeys = new ArrayList<>();
+
+    private Map<String, StringBuilder> mandatoryLabels = new HashMap<>(Map.of(
         "entrypoints", new StringBuilder(),
         "rule", new StringBuilder(),
         "tls", new StringBuilder(),
@@ -46,23 +60,18 @@ public class TraefikFileConfig {
         "url", new StringBuilder()
     ));
 
-    public static void add(JsonNode node) {
+    // private List<HTTPConfig> httpConfigs = new ArrayList<>();
+    private Map<String, Router> routers = new HashMap<>();
+    private Map<String, Service> services = new HashMap<>();
+
+    private StringBuilder fileNameBuilder = new StringBuilder();
+
+    public void add(JsonNode node) {
         Map<String, String> map = mapper.convertValue(
             node,
             new TypeReference<Map<String, String>>() {}
         );
         Set<String> routerKeySet = map.keySet();
-
-        Pattern routerNameRegex = Pattern.compile("traefik\\.http\\.routers\\.([a-zA-Z0-9-]+)\\..+");
-        Matcher routerNameMatcher;
-        StringBuilder routerNameBuilder = new StringBuilder();
-
-        Pattern serviceNameRegex = Pattern.compile("traefik\\.http\\.services\\.([a-zA-Z0-9-]+)\\..+");
-        Matcher serviceNameMatcher;
-        StringBuilder serviceNameBuilder = new StringBuilder();
-
-        Pattern labelRegex = Pattern.compile("entryp?P?oints|rule|tls");
-        Matcher labelMatcher;
 
         for (String key : routerKeySet) {
             routerNameMatcher = routerNameRegex.matcher(key);
@@ -88,38 +97,61 @@ public class TraefikFileConfig {
             
         }
 
-        if (!routerNameBuilder.isEmpty() && !serviceNameBuilder.isEmpty()) {
-            if (areLabelsValid()) {
-                buildConfigRecord(routerNameBuilder.toString(), serviceNameBuilder.toString());
-            } else {
+        if (!routerNameBuilder.isEmpty() || !serviceNameBuilder.isEmpty()) {
+            if (!areLabelsValid()) {
                 throw new InvalidJsonNodeException("JsonNode validation failed: Following labels " + nullKeys.toString().replaceAll("[\\[\\]]", "") + " were not found");
+            } else {
+                buildRoutersServicesRecord(routerNameBuilder.toString(), serviceNameBuilder.toString());
             }
+        } else {
+            StringBuilder messageBuilder = new StringBuilder();
+            if (routerNameBuilder.isEmpty()) {
+                messageBuilder.append("JsonNode validation failed: Missing router name in labels");
+            } else if (serviceNameBuilder.isEmpty()) {
+                messageBuilder.append("JsonNode validation failed: Missing service name in labels");
+            }
+            throw new InvalidJsonNodeException(messageBuilder.toString());
         }
 
+        fileNameBuilder.append(map.get("Hostname"));
         
     }
 
-    private static void buildConfigRecord(String routerName, String serviceName) {
+    private void buildRoutersServicesRecord(String routerName, String serviceName) {
             
-        HTTPConfig config = new HTTPConfig(
-            Map.of(routerName, new Router(
+            routers.put(routerName, new Router (
                 mandatoryLabels.get("entrypoints").toString(),
                 mandatoryLabels.get("rule").toString(),
                 new TLS(),
                 mandatoryLabels.get("service").toString()
+            ));
 
-            )),
-
-            Map.of(serviceName, new Service(
+            services.put(serviceName, new Service(
                 new LoadBalancer(List.of(new Server(mandatoryLabels.get("url").toString())))
-            ))
-        );
+            ));
 
-        configs.add(config);
     }
 
-    private static Boolean areLabelsValid() {
-        nullKeys = new ArrayList<>();
+    public void createFileConfig() {
+        
+        if (nullKeys.isEmpty()) {
+            throw new IllegalStateException("This TraefikFileObject does not has valid FileConfig record");
+        }
+
+        FileConfig fileConfig = new FileConfig(
+            new HTTPConfig(routers, services)
+        );
+
+        File yamlFile = new File(fileNameBuilder.toString() + ".yaml");
+        
+        try {
+            yamlMapper.writeValue(yamlFile, fileConfig);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private Boolean areLabelsValid() {
         
         for (Map.Entry<String, StringBuilder> entry : mandatoryLabels.entrySet()) {
             if (entry.getValue().toString().isBlank()) {
@@ -132,6 +164,5 @@ public class TraefikFileConfig {
         } else {
             return true;
         }
-
     }
 }

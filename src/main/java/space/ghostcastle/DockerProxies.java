@@ -20,12 +20,14 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 
 public class DockerProxies {
+
     private List<String> dockerProxies = new ArrayList<>();
     private final HttpClient client = HttpClient.newHttpClient(); 
     private static DockerProxies instance;
-    private static Path socketProxiesFile = Paths.get(".socket-proxies");
-    private static String path = "/containers/json";
-    private ObjectMapper map = new ObjectMapper();
+    private static final Path socketProxiesFile = Paths.get(".socket-proxies");
+    private static final String containerPath = "/containers/json";
+    private static final String infoPath = "/info";
+    private final ObjectMapper map = new ObjectMapper();
 
     private DockerProxies() {
         try (Stream<String> lines = Files.lines(socketProxiesFile)) {
@@ -43,7 +45,36 @@ public class DockerProxies {
         return instance;
     }
 
-    public ArrayNode getContainers() throws Exception {
+    private JsonNode makeHttpGetRequest(String url, String path) {
+        
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url + path))
+            .GET()
+            .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            return map.readTree(response.body());
+
+        } catch(IOException | InterruptedException e ) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String getHostname(String proxy) {
+            
+        JsonNode rootNode = makeHttpGetRequest(infoPath, containerPath);
+            
+        if (rootNode == null) {
+            throw new NullPointerException("Something went wrong with calling proxy " + proxy + " on path " + infoPath); 
+        }
+
+        return rootNode.get("Name").toString();
+    }
+
+    public ArrayNode getContainers() {
         ObjectMapper yamlMapper = new ObjectMapper(
             new YAMLFactory()
         );
@@ -51,51 +82,23 @@ public class DockerProxies {
 
         for (String proxy : this.dockerProxies) {
 
-            try {
-                
-                HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(proxy + path))
-                .GET()
-                .build();
+            JsonNode rootNode = makeHttpGetRequest(proxy, containerPath);
+            if (rootNode == null) {
+                throw new NullPointerException("Something went wrong with calling proxy " + proxy + " on path " + containerPath);
+            }
 
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                if (response.statusCode() != 200) {
-                    continue;
-                }
-
-                JsonNode rootNode = map.readTree(response.body());
-
-                // Path filePath = Paths.get("response.json");
-
-                // try {
-                //     Files.writeString(filePath, rootNode.toPrettyString());
-                //     return 
-                // }
-                // for (JsonNode container : rootNode) {
-                //     Boolean isTraefikEnabled = container.path("Labels").path("traefik.enable").asBoolean();
-                //     System.out.println(isTraefikEnabled);
-                // }
-                
-                for (JsonNode container : rootNode) {
-                    ObjectNode selectedKeys = yamlMapper.createObjectNode();
-                    selectedKeys.put("Id", container.path("Id").asText());
-                    selectedKeys.set("Names", container.path("Names"));
-                    selectedKeys.set("Ports", container.path("Ports"));
-                    selectedKeys.set("Labels", container.path("Labels"));
-                    containers.add(selectedKeys);
-                }
-                // String yamlString = yamlMapper.writeValueAsString(containers);
-                // Files.writeString(Path.of("container" + ".yaml"), yamlString);
-                return containers;
-                
-            } catch (Exception e) {
-                e.printStackTrace();
-                return containers;
+            String proxyName = getHostname(proxy);
+            
+            for (JsonNode container : rootNode) {
+                ObjectNode selectedKeys = yamlMapper.createObjectNode();
+                selectedKeys.put("Hostname", proxyName);
+                selectedKeys.put("Id", container.path("Id").asText());
+                selectedKeys.set("Names", container.path("Names"));
+                selectedKeys.set("Ports", container.path("Ports"));
+                selectedKeys.set("Labels", container.path("Labels"));
+                containers.add(selectedKeys);
             }
         }
-
-        return  containers;
-
+        return containers;
     }
 }
