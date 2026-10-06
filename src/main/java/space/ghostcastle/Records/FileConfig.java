@@ -10,10 +10,10 @@ public record FileConfig(HTTPConfig http) {
         Map<String, Router> routers, Map<String, Service> services) {
 
             public record Router(
-                List<String> entryPoints,
+                String entryPoints,
                 String rule,
                 TLS tls,
-                Service service
+                String service
             ) {
                 public record TLS(){};
             }

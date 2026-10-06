@@ -1,22 +1,41 @@
 services:
-  app1:
-    image: alpine/socat
-    command: tcp-listen:80,fork,reuseaddr exec:"echo -e 'HTTP/1.1 200 OK\r\n\r\nHello from App 1!'"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app1.rule=Host(`app1.localhost`)"
-      - "traefik.http.routers.app1.entrypoints=web"
-      - "traefik.http.routers.app1.tls=true"
-      - "traefik.http.services.app1.loadbalancer.server.port=80"
+  # app1:
+  #   image: alpine/socat
+  #   command: tcp-listen:80,fork,reuseaddr exec:"echo -e 'HTTP/1.1 200 OK\r\n\r\nHello from App 1!'"
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.app1.rule=Host(`app1.localhost`)"
+  #     - "traefik.http.routers.app1.entrypoints=web"
+  #     - "traefik.http.routers.app1.tls=true"
+  #     - "traefik.http.services.app1.loadbalancer.server.port=80"
 
   # Container 2: app2.localhost
   app2:
-    image: alpine/socat
-    # Listens on port 80 and returns a simple plain text response
-    command: tcp-listen:80,fork,reuseaddr exec:"echo -e 'HTTP/1.1 200 OK\r\n\r\nHello from App 2!'"
+    image: traefik/whoami
+    container_name: whoami
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app2.rule=Host(`app2.localhost`)"
-      - "traefik.http.routers.app2.entrypoints=web"
       - "traefik.http.routers.app2.tls=true"
-      - "traefik.http.services.app2.loadbalancer.server.port=80"
+      - "traefik.http.services.app2.loadbalancer.servers[0].url = http://localhost"
+  
+  socket-proxy:
+    image: lscr.io/linuxserver/socket-proxy:latest
+    container_name: socket-proxy
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /run
+    environment:
+      # Enable access to list containers, ports, labels, and state
+      - CONTAINERS=1
+      # Enable access to docker swarm services (if applicable)
+      # - SERVICES=1
+      # Safety locks (read-only mode)
+      - POST=0
+      - ALLOW_START=0
+      - ALLOW_STOP=0
+      - ALLOW_RESTARTS=0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "2375:2375"

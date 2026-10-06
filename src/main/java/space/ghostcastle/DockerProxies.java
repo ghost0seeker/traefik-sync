@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,7 +66,7 @@ public class DockerProxies {
 
                 JsonNode rootNode = map.readTree(response.body());
 
-                Path filePath = Paths.get("response.json");
+                // Path filePath = Paths.get("response.json");
 
                 // try {
                 //     Files.writeString(filePath, rootNode.toPrettyString());

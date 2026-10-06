@@ -1,19 +1,16 @@
 package space.ghostcastle;
 
 import space.ghostcastle.Exceptions.*;
-
+import space.ghostcastle.Records.FileConfig.HTTPConfig;
 import io.javalin.Javalin;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 public class App {
     private static ArrayNode containers;
-    private static List<Map<String, String>> routerConfigs = new ArrayList<>();
     public static void main(String[] args) {
         Javalin app = Javalin.create(config -> {
             config.routes.get("/", ctx -> ctx.result("Hello to traefik sync app"));
@@ -23,21 +20,21 @@ public class App {
                 System.out.println();
 
                 for (JsonNode node : containers) {
-                    TraefikRouteConfig traefikRouteConfig = new TraefikRouteConfig();
                     try {
-                        traefikRouteConfig.validateJsonNode(node.path("Labels"));
-                        traefikRouteConfig.declare();
-                        routerConfigs.add(traefikRouteConfig.getConfig());
+                        TraefikFileConfig.add(node.path("Labels"));
                     } catch (InvalidJsonNodeException e) {
                         System.err.println(e);
                         // e.printStackTrace();
                     }
                 }
+
+                List<HTTPConfig> configs = TraefikFileConfig.configs;
+                System.lineSeparator();
             });
         }).start(7000);
 
-        String str = "str";
     }
+
 
 
 }
