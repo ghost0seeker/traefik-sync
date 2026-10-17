@@ -31,9 +31,16 @@ public class DockerProxies {
 
     private DockerProxies() {
         try (Stream<String> lines = Files.lines(socketProxiesFile)) {
-            lines.forEach(this.dockerProxies::add);
+            List<String> dockerProxies = lines.toList();
+            if (dockerProxies.size() == 0) {
+                throw new IllegalStateException(".socket-proxies is empty");
+            }
+            this.dockerProxies = dockerProxies;
         } catch (IOException e) {
             System.err.println("Could not find .socket-proxies,\nplease create a .socket-proxies file to declare your docker socket proxies to use");
+            System.exit(1);
+        } catch (IllegalStateException e) {
+            System.err.println(e.getMessage());
             System.exit(1);
         }
     }
@@ -65,7 +72,7 @@ public class DockerProxies {
 
     private String getHostname(String proxy) {
             
-        JsonNode rootNode = makeHttpGetRequest(infoPath, containerPath);
+        JsonNode rootNode = makeHttpGetRequest(proxy, infoPath);
             
         if (rootNode == null) {
             throw new NullPointerException("Something went wrong with calling proxy " + proxy + " on path " + infoPath); 

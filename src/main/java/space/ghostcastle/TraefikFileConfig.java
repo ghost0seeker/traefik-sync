@@ -9,15 +9,13 @@ package space.ghostcastle;
  */
 
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,6 +33,7 @@ import space.ghostcastle.Records.FileConfig.HTTPConfig.Service.LoadBalancer.Serv
 
 
 public class TraefikFileConfig {
+    private Map<String, FileConfig> fileConfigs = new HashMap<>();
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
@@ -60,13 +59,10 @@ public class TraefikFileConfig {
         "url", new StringBuilder()
     ));
 
-    // private List<HTTPConfig> httpConfigs = new ArrayList<>();
-    private Map<String, Router> routers = new HashMap<>();
-    private Map<String, Service> services = new HashMap<>();
 
-    private StringBuilder fileNameBuilder = new StringBuilder();
-
-    public void add(JsonNode node) {
+    public void createConfig(JsonNode node) {
+        // ! Debug
+        System.out.println("Incoming JSON: " + node.toString());
         Map<String, String> map = mapper.convertValue(
             node,
             new TypeReference<Map<String, String>>() {}
@@ -96,12 +92,15 @@ public class TraefikFileConfig {
             }
             
         }
-
+        
         if (!routerNameBuilder.isEmpty() || !serviceNameBuilder.isEmpty()) {
             if (!areLabelsValid()) {
                 throw new InvalidJsonNodeException("JsonNode validation failed: Following labels " + nullKeys.toString().replaceAll("[\\[\\]]", "") + " were not found");
             } else {
-                buildRoutersServicesRecord(routerNameBuilder.toString(), serviceNameBuilder.toString());
+                HTTPConfig httpConfig = buildHTTPConfigRecord(routerNameBuilder.toString(), serviceNameBuilder.toString());
+                String proxyHostName = map.get("Hostname");
+                FileConfig fileConfig = new FileConfig(proxyHostName, httpConfig);
+                fileConfigs.put(proxyHostName, fileConfig);
             }
         } else {
             StringBuilder messageBuilder = new StringBuilder();
@@ -112,43 +111,45 @@ public class TraefikFileConfig {
             }
             throw new InvalidJsonNodeException(messageBuilder.toString());
         }
-
-        fileNameBuilder.append(map.get("Hostname"));
-        
     }
 
-    private void buildRoutersServicesRecord(String routerName, String serviceName) {
+    private HTTPConfig buildHTTPConfigRecord(String routerName, String serviceName) {
             
-            routers.put(routerName, new Router (
+            Router router = new Router (
                 mandatoryLabels.get("entrypoints").toString(),
                 mandatoryLabels.get("rule").toString(),
                 new TLS(),
                 mandatoryLabels.get("service").toString()
-            ));
+            );
 
-            services.put(serviceName, new Service(
+            Service service =  new Service(
                 new LoadBalancer(List.of(new Server(mandatoryLabels.get("url").toString())))
-            ));
+            );
 
+            return new HTTPConfig(Map.of(routerName, router), Map.of(serviceName, service));
+    }
+
+    public FileConfig getConfig(String proxyHostName) {
+        return fileConfigs.get(proxyHostName);
     }
 
     public void createFileConfig() {
         
-        if (nullKeys.isEmpty()) {
-            throw new IllegalStateException("This TraefikFileObject does not has valid FileConfig record");
-        }
+        // if (nullKeys.isEmpty()) {
+        //     throw new IllegalStateException("This TraefikFileObject does not has valid FileConfig record");
+        // }
 
-        FileConfig fileConfig = new FileConfig(
-            new HTTPConfig(routers, services)
-        );
+        // FileConfig fileConfig = new FileConfig(
+        //     new HTTPConfig(routers, services)
+        // );
 
-        File yamlFile = new File(fileNameBuilder.toString() + ".yaml");
+        // File yamlFile = new File(fileNameBuilder.toString() + ".yaml");
         
-        try {
-            yamlMapper.writeValue(yamlFile, fileConfig);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+        // try {
+        //     yamlMapper.writeValue(yamlFile, fileConfig);
+        // } catch (IOException e) {
+        //     System.out.println(e.getMessage());
+        // }
     }
 
     private Boolean areLabelsValid() {

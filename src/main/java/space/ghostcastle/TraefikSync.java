@@ -1,40 +1,57 @@
 package space.ghostcastle;
 
 import space.ghostcastle.Exceptions.*;
+import space.ghostcastle.Records.FileConfig;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-public class App {
+public class TraefikSync {
 
-    private static ArrayNode containers;
-    public static void main(String[] args) {
-        
+    private Javalin app;
+    private DockerProxies dockerProxies;
+
+    private TraefikSync() {
+        this.dockerProxies = DockerProxies.create();
+    }
+
+    private void start() {
         Javalin app = Javalin.create(config -> {
             
             config.routes.get("/", ctx -> ctx.result("Hello from traefik sync app"));
             
-            config.routes.post("/sync", ctx -> buildHTTPConfig(ctx));
+            config.routes.post("/sync", ctx -> this.buildHTTPConfig(ctx));
         
         }).start(7000);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(app::stop));
+        this.app = app;
     }
 
-    private static void buildHTTPConfig(Context ctx) {
+    private void stop() {
+        this.app.stop();
+    }
+    public static void main(String[] args) {
+        TraefikSync ts = new TraefikSync();
+        ts.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(ts::stop));
+    }
+
+    private Context buildHTTPConfig(Context ctx) {
         
-        DockerProxies dP = DockerProxies.create();
         //FIXME: This will add containers of all proxies into one single file which we dont want, get proxies and create TraefikFileConfig for each from DockerProxies to here instead or create a Proxy to Cotnainer Map.
-        containers = dP.getContainers();
+        ArrayNode containers = this.dockerProxies.getContainers();
         TraefikFileConfig traefikFileConfig = new TraefikFileConfig();
 
         for (JsonNode node : containers) {
             try {
-                traefikFileConfig.add(node);
+                traefikFileConfig.createConfig(node);
             } catch (InvalidJsonNodeException e) {
                 ctx.status(400).result(e.getMessage());
             }
         }
+        FileConfig fileConfig = traefikFileConfig.getConfig("localhost");
+        System.out.println(fileConfig);
+        return ctx.status(200).result("Success");
     }
 }

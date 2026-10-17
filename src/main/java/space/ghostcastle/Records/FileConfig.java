@@ -3,8 +3,7 @@ package space.ghostcastle.Records;
 import java.util.List;
 import java.util.Map;
 
-public record FileConfig(HTTPConfig http) {
-
+public record FileConfig(String fileName, HTTPConfig http) {
     public record HTTPConfig(
 
         Map<String, Router> routers, Map<String, Service> services) {

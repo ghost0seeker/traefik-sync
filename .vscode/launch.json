@@ -15,7 +15,7 @@
             "type": "java",
             "name": "App",
             "request": "launch",
-            "mainClass": "space.ghostcastle.App",
+            "mainClass": "space.ghostcastle.TraefikSync",
             "projectName": "traefik-sync",
         }
     ]
