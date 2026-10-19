@@ -1,10 +1,10 @@
 package space.ghostcastle;
 
-import space.ghostcastle.Exceptions.*;
+import space.ghostcastle.Records.DockerProxyRecord;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import java.util.List;
 
 public class TraefikSync {
 
@@ -37,28 +37,20 @@ public class TraefikSync {
     }
 
     private Context buildHTTPConfig(Context ctx) {
-        int failedContainers = 0;
-        int netContainers = 0;
+
         TraefikFileConfig traefikFileConfig = new TraefikFileConfig();
         
         //FIXME: This will add containers of all proxies into one single file which we dont want, get proxies and create TraefikFileConfig for each from DockerProxies to here instead or create a Proxy to Cotnainer Map.
         
-        try {
-            ArrayNode containers = this.dockerProxies.getContainers();
-
-            for (JsonNode node : containers) {
-                traefikFileConfig.createConfig(node);
-                netContainers++;
-            }
-            
-        } catch (InvalidJsonNodeException e) {
-            failedContainers++;
-            // return ctx.status(400).result(e.getMessage());
+        List<DockerProxyRecord> proxyRecords = this.dockerProxies.getProxyRecords();
+        
+        for (DockerProxyRecord record : proxyRecords) {
+            traefikFileConfig.createConfig(record);
         }
-
+        
         traefikFileConfig.createFileConfig("envy");
         traefikFileConfig.createFileConfig("vultr-one");
 
-        return ctx.status(200).result("Success\n" + "No of Containers: " + netContainers + (failedContainers != 0 ? ("\nFailed Containers: " + failedContainers) : "" ));
+        return ctx.status(200);
     }
 }

@@ -21,9 +21,11 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import space.ghostcastle.Exceptions.InvalidJsonNodeException;
+import space.ghostcastle.Records.DockerProxyRecord;
 import space.ghostcastle.Records.FileConfig;
 import space.ghostcastle.Records.FileConfig.HTTPConfig;
 import space.ghostcastle.Records.FileConfig.HTTPConfig.Router;
@@ -42,112 +44,136 @@ public class TraefikFileConfig {
     private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
 
     private final Pattern routerNameRegex = Pattern.compile("traefik\\.http\\.routers\\.([a-zA-Z0-9-]+)\\..*");
-    private Matcher routerNameMatcher;
-    private StringBuilder routerNameBuilder = new StringBuilder();
 
     private final Pattern serviceNameRegex = Pattern.compile("traefik\\.http\\.services\\.([a-zA-Z0-9-]+)\\..*");
-    private Matcher serviceNameMatcher;
-    private StringBuilder serviceNameBuilder = new StringBuilder();
 
-    private final Pattern hostNameRegex = Pattern.compile("\\W*(\\w+)\\W*");
     private final Pattern labelRegex = Pattern.compile("(?i)traefik\\.http\\.(?:routers|services)\\.[\\w\\d-]+\\.(?:(?<entrypoints>entrypoints)|(?<rule>rule)|(?<tls>tls))$");
 
     private Matcher labelMatcher;
 
     private List<String> nullKeys = new ArrayList<>();
 
-    public void createConfig(JsonNode node) {
-        List<String> entrypoints = new ArrayList<>();
-        List<String> url = new ArrayList<>();
-        StringBuilder rule = new StringBuilder();
-        StringBuilder tls = new StringBuilder();
-        StringBuilder service = new StringBuilder();
+    public void createConfig(DockerProxyRecord proxyRecord) {
+        
+        String proxyName = proxyRecord.name();
+        ArrayNode containers = proxyRecord.containers();
 
-        JsonNode labels = node.path("Labels");
-        Map<String, String> labelMap = mapper.convertValue(
-            labels,
-            new TypeReference<Map<String, String>>() {}
+        HTTPConfig httpConfig = new HTTPConfig(
+            new HashMap<>(),
+            new HashMap<>()
         );
 
-        List<String> routerKeySet = labelMap.keySet().stream().filter(k -> k.startsWith("traefik")).toList();
-        
-        for (String key : routerKeySet) {
-            routerNameMatcher = routerNameRegex.matcher(key);
-            serviceNameMatcher = serviceNameRegex.matcher(key);
+        int failedContainers = 0;
+
+        for (JsonNode container : containers) {
             
-            if (routerNameMatcher.matches()) {
-                if (routerNameBuilder.isEmpty()) {
-                    routerNameBuilder.append(routerNameMatcher.group(1));
+            List<String> entrypoints = new ArrayList<>();
+            List<String> url = new ArrayList<>();
+            StringBuilder rule = new StringBuilder();
+            StringBuilder tls = new StringBuilder();
+            StringBuilder service = new StringBuilder();
+            
+            StringBuilder routerNameBuilder = new StringBuilder();
+            StringBuilder serviceNameBuilder = new StringBuilder();
+            
+            Matcher routerNameMatcher;
+            Matcher serviceNameMatcher;
+
+            JsonNode labels = container.path("Labels");
+            
+            Map<String, String> labelMap = mapper.convertValue(
+                labels,
+                new TypeReference<Map<String, String>>() {}
+            );
+        
+            try {
+
+                List<String> routerKeySet = labelMap.keySet().stream().filter(k -> k.startsWith("traefik")).toList();
+
+                if (routerKeySet.size() < 4) {
+                    throw new InvalidJsonNodeException(proxyName + " does not have valid traefik labels");
                 }
-                
-                labelMatcher = labelRegex.matcher(key); 
-                
-                if (labelMatcher.find()) {  
-                    if (labelMatcher.group("entrypoints") != null) {
-                         List<String> ePList = getListFromString(labelMap.get(key));
-                         if (ePList != null) {
-                            entrypoints.addAll(ePList);
-                         }
-                    } else if (labelMatcher.group("rule") != null) {
-                        rule.append(labelMap.get(key));
-                    } else if (labelMatcher.group("tls") != null) {
-                        tls.append(labelMap.get(key));
+
+                for (String key : routerKeySet) {
+                    routerNameMatcher = routerNameRegex.matcher(key);
+                    serviceNameMatcher = serviceNameRegex.matcher(key);
+                    
+                    if (routerNameMatcher.matches()) {
+                        if (routerNameBuilder.isEmpty()) {
+                            routerNameBuilder.append(routerNameMatcher.group(1));
+                        }
+                        
+                        labelMatcher = labelRegex.matcher(key); 
+                        
+                        if (labelMatcher.find()) {  
+                            if (labelMatcher.group("entrypoints") != null) {
+                                List<String> ePList = getListFromString(labelMap.get(key));
+                                if (ePList != null) {
+                                    entrypoints.addAll(ePList);
+                                }
+                            } else if (labelMatcher.group("rule") != null) {
+                                rule.append(labelMap.get(key));
+                            } else if (labelMatcher.group("tls") != null) {
+                                tls.append(labelMap.get(key));
+                            }
+                        }
+                    }
+                    
+                    if (serviceNameMatcher.find()) {
+                        if (serviceNameBuilder.isEmpty()) {
+                            serviceNameBuilder.append(serviceNameMatcher.group(1).trim());
+                        }
+                        service.append(serviceNameBuilder.toString());
+                        List<String> urlList = getListFromString(labelMap.get(key));
+                        if (urlList != null) {
+                            url.addAll(urlList);
+                        }
                     }
                 }
-            }
-            
-            if (serviceNameMatcher.find()) {
-                if (serviceNameBuilder.isEmpty()) {
-                    serviceNameBuilder.append(serviceNameMatcher.group(1).trim());
-                }
-                service.append(serviceNameBuilder.toString());
-                List<String> urlList = getListFromString(labelMap.get(key));
-                if (urlList != null) {
-                    url.addAll(urlList);
-                }
-                labelMatcher = labelRegex.matcher(key); 
-                if (labelMatcher.find()) {  
-                }
-            }
-        }
-        
-        if (!routerNameBuilder.isEmpty() || !serviceNameBuilder.isEmpty()) {
-            if (!areLabelsValid(entrypoints, rule, tls, service, url)) {
-                throw new InvalidJsonNodeException("JsonNode validation failed: Following labels " + nullKeys.toString().replaceAll("[\\[\\]]", "") + " were not found");
-            } else {
-                
-                MandatoryLabels mandatoryLabels = getMandatoryLabelsRecord();
-                
-                mandatoryLabels.entrypoints().addAll(entrypoints);
-                mandatoryLabels.urls().addAll(url);
-                mandatoryLabels.rule().append(rule.toString());
-                mandatoryLabels.tls().append(tls.toString());
-                mandatoryLabels.service().append(service.toString());
 
-                HTTPConfig httpConfig = buildHTTPConfigRecord(routerNameBuilder.toString(), serviceNameBuilder.toString(), mandatoryLabels);
-                String proxyHostName = node.path("Hostname").toPrettyString();
-                Matcher proxyNameMatcher = hostNameRegex.matcher(proxyHostName);
-                
-                boolean didNameMatch = proxyNameMatcher.find();
-                if (didNameMatch) {
-                    proxyHostName = proxyNameMatcher.group(1);
+                if (!routerNameBuilder.isEmpty() || !serviceNameBuilder.isEmpty()) {
+                    if (!areLabelsValid(entrypoints, rule, tls, service, url)) {
+                        throw new InvalidJsonNodeException("JsonNode validation failed: Following labels " + nullKeys.toString().replaceAll("[\\[\\]]", "") + " were not found");
+                    } else {
+                        
+                        MandatoryLabels mandatoryLabels = getMandatoryLabelsRecord();
+                        
+                        mandatoryLabels.entrypoints().addAll(entrypoints);
+                        mandatoryLabels.urls().addAll(url);
+                        mandatoryLabels.rule().append(rule.toString());
+                        mandatoryLabels.tls().append(tls.toString());
+                        mandatoryLabels.service().append(service.toString());
+
+                        Router routers = getRouterRecord(mandatoryLabels);
+                        Service services = getServiceRecord(mandatoryLabels);
+
+                        httpConfig.routers().put(routerNameBuilder.toString(), routers);
+                        httpConfig.services().put(serviceNameBuilder.toString(), services);
+                    }
+                    
+                } else {
+                    
+                    StringBuilder messageBuilder = new StringBuilder();
+                    
+                    if (routerNameBuilder.isEmpty()) {
+                        messageBuilder.append("JsonNode validation failed: Missing router name in labels");
+                    } else if (serviceNameBuilder.isEmpty()) {
+                        messageBuilder.append("JsonNode validation failed: Missing service name in labels");
+                    }
+                        throw new InvalidJsonNodeException(messageBuilder.toString());
                 }
 
-                FileConfig fileConfig = new FileConfig(httpConfig);
-                fileConfigs.put(proxyHostName, fileConfig);
+            } catch (InvalidJsonNodeException e) {
+                System.out.println(e.getMessage());
+                failedContainers++;
             }
-        } else {
-            StringBuilder messageBuilder = new StringBuilder();
-            if (routerNameBuilder.isEmpty()) {
-                messageBuilder.append("JsonNode validation failed: Missing router name in labels");
-            } else if (serviceNameBuilder.isEmpty()) {
-                messageBuilder.append("JsonNode validation failed: Missing service name in labels");
-            }
-            throw new InvalidJsonNodeException(messageBuilder.toString());
         }
+
+        System.out.println(proxyName + ": No of Containers: " + containers.size() + ((failedContainers != 0) ? "\nFailed Containers: " + failedContainers : ""));
+        fileConfigs.put(proxyName, new FileConfig(httpConfig));
     }
 
-    private HTTPConfig buildHTTPConfigRecord(String routerName, String serviceName, MandatoryLabels mandatoryLabels) {
+    private Router getRouterRecord(MandatoryLabels mandatoryLabels) {
         boolean tls = false;
 
         if (Boolean.valueOf(mandatoryLabels.tls().toString())) {
@@ -161,11 +187,16 @@ public class TraefikFileConfig {
             mandatoryLabels.service().toString()
         );
 
+        return router;
+    }
+
+    private Service getServiceRecord(MandatoryLabels mandatoryLabels) {
+
         Service service =  new Service(
             new LoadBalancer(List.of(new Server(mandatoryLabels.urls())))
         );
 
-        return new HTTPConfig(Map.of(routerName, router), Map.of(serviceName, service));
+        return service;
     }
 
     public FileConfig getConfig(String proxyHostName) {
@@ -197,16 +228,22 @@ public class TraefikFileConfig {
 
     private Boolean areLabelsValid(List<String> entrypoints, StringBuilder rule, StringBuilder tls, StringBuilder service, List<String> url) {
         
-        if (
-            entrypoints.isEmpty() ||
-            rule.isEmpty() ||
-            service.isEmpty() ||
-            url.isEmpty()
-        ) {
-            return false;
-        } else {
-            return true;
+        if (entrypoints.isEmpty()) {
+            nullKeys.add("entrypoints");
+        } else if (rule.isEmpty()) {
+            nullKeys.add("rule");
+        } else if (tls.isEmpty()) {
+            nullKeys.add("tls");
+        } else if (url.isEmpty()) {
+            nullKeys.add("url");
         }
+
+        if (nullKeys.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     private static MandatoryLabels getMandatoryLabelsRecord () {

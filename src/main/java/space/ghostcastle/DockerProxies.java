@@ -1,5 +1,6 @@
 package space.ghostcastle;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -16,10 +17,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import space.ghostcastle.Exceptions.InvalidJsonNodeException;
-
+import space.ghostcastle.Records.DockerProxyRecord;
 
 public class DockerProxies {
 
@@ -83,34 +83,44 @@ public class DockerProxies {
             throw new NullPointerException("Something went wrong with calling proxy " + proxy + " on path " + infoPath); 
         }
 
-        return rootNode.get("Name").toString();
+        String a = rootNode.get("Name").toString();
+        String b = a.replaceAll("\"", "");
+        return b;
     }
 
-    public ArrayNode getContainers() {
-        ObjectMapper yamlMapper = new ObjectMapper(
-            new YAMLFactory()
-        );
-        ArrayNode containers = yamlMapper.createArrayNode();
+    public List<DockerProxyRecord> getProxyRecords() {
+        
+        List<DockerProxyRecord> records = new ArrayList<>();
 
         for (String proxy : this.dockerProxies) {
 
             JsonNode rootNode = makeHttpGetRequest(proxy, containerPath);
+
             if (rootNode == null) {
                 throw new NullPointerException("Something went wrong with calling proxy " + proxy + " on path " + containerPath);
             }
 
-            String proxyName = getHostname(proxy);
-            
-            for (JsonNode container : rootNode) {
-                ObjectNode selectedKeys = yamlMapper.createObjectNode();
-                selectedKeys.put("Hostname", proxyName);
-                selectedKeys.put("Id", container.path("Id").asText());
-                selectedKeys.set("Names", container.path("Names"));
-                selectedKeys.set("Ports", container.path("Ports"));
-                selectedKeys.set("Labels", container.path("Labels"));
-                containers.add(selectedKeys);
+            if (!rootNode.isArray()) {
+                throw new  InvalidJsonNodeException("GET " + proxy + "/containers/json did not return a json ArrayNode.");
             }
+
+            ArrayNode arrayNode = map.createArrayNode();
+            String proxyName = getHostname(proxy);
+
+            for (JsonNode node : rootNode) {
+                ObjectNode objNode = map.createObjectNode();
+                
+                objNode.put("Id", node.path("Id").asText());
+                objNode.set("Names", node.path("Names"));
+                objNode.set("Ports", node.path("Ports"));
+                objNode.set("Labels", node.path("Labels"));
+                
+                arrayNode.add(objNode);
+            }
+            records.add(new DockerProxyRecord(proxyName, arrayNode));
         }
-        return containers;
+        
+        
+        return records;
     }
 }
