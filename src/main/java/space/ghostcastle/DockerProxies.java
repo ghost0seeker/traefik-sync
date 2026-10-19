@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
+import space.ghostcastle.Exceptions.InvalidJsonNodeException;
+
 
 public class DockerProxies {
 
@@ -61,7 +63,10 @@ public class DockerProxies {
             .build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
+            String str = response.body();
+            if (str.contains("html")) {
+                throw new InvalidJsonNodeException("Server returned html for proxy host " + url);
+            }
             return map.readTree(response.body());
 
         } catch(IOException | InterruptedException e ) {

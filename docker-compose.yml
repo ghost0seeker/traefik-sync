@@ -17,6 +17,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.app2.tls=true"
       - "traefik.http.services.app2.loadbalancer.servers[0].url = http://localhost"
+      - "traefik.http.routers.app2.entrypoints=https"
+      - "traefik.http.routers.app2.rule=Host(`ghostcastle.space`)"
   
   socket-proxy:
     image: lscr.io/linuxserver/socket-proxy:latest

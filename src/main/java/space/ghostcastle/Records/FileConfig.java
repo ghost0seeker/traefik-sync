@@ -3,13 +3,13 @@ package space.ghostcastle.Records;
 import java.util.List;
 import java.util.Map;
 
-public record FileConfig(String fileName, HTTPConfig http) {
+public record FileConfig(HTTPConfig http) {
     public record HTTPConfig(
 
         Map<String, Router> routers, Map<String, Service> services) {
 
             public record Router(
-                String entryPoints,
+                List<String> entryPoints,
                 String rule,
                 TLS tls,
                 String service
@@ -21,7 +21,7 @@ public record FileConfig(String fileName, HTTPConfig http) {
                 LoadBalancer loadBalancer
             ) {
                 public record LoadBalancer(List<Server> servers) {
-                    public record Server(String url) {}
+                    public record Server(List<String> url) {}
                 }
             }
 
