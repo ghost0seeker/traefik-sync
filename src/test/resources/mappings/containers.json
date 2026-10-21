@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/containers/json"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "containers.json"
+  }
+}

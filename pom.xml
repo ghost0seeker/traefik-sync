@@ -12,7 +12,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.release>25</maven.compiler.release>
   </properties>
 
   <dependencyManagement>
@@ -67,7 +67,14 @@
     <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-      </dependency>
+    </dependency>
+    <!-- Source: https://mvnrepository.com/artifact/org.wiremock/wiremock-standalone -->
+    <dependency>
+      <groupId>org.wiremock</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <version>3.13.2</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

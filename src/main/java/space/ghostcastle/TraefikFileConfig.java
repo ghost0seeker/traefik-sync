@@ -38,7 +38,7 @@ import space.ghostcastle.Records.MandatoryLabels;
 
 public class TraefikFileConfig {
 
-    private Map<String, FileConfig> fileConfigs = new HashMap<>();
+    private final Map<String, FileConfig> fileConfigs = new HashMap<>();
 
     private final ObjectMapper mapper = new ObjectMapper();
     private final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
@@ -49,12 +49,10 @@ public class TraefikFileConfig {
 
     private final Pattern labelRegex = Pattern.compile("(?i)traefik\\.http\\.(?:routers|services)\\.[\\w\\d-]+\\.(?:(?<entrypoints>entrypoints)|(?<rule>rule)|(?<tls>tls))$");
 
-    private Matcher labelMatcher;
+    private final List<String> nullKeys = new ArrayList<>();
 
-    private List<String> nullKeys = new ArrayList<>();
+    public void createConfig(DockerProxyRecord proxyRecord) throws InvalidJsonNodeException {
 
-    public void createConfig(DockerProxyRecord proxyRecord) {
-        
         String proxyName = proxyRecord.name();
         ArrayNode containers = proxyRecord.containers();
 
@@ -66,26 +64,31 @@ public class TraefikFileConfig {
         int failedContainers = 0;
 
         for (JsonNode container : containers) {
-            
+
             List<String> entrypoints = new ArrayList<>();
             List<String> url = new ArrayList<>();
             StringBuilder rule = new StringBuilder();
             StringBuilder tls = new StringBuilder();
             StringBuilder service = new StringBuilder();
-            
+            StringBuilder containerName = new StringBuilder();
+
+            containerName.append(container.path("Name"));
+
+            ArrayNode containerNames = (ArrayNode) container.path("Names");
+            containerName.append(List.of(containerNames).getLast());
+
             StringBuilder routerNameBuilder = new StringBuilder();
             StringBuilder serviceNameBuilder = new StringBuilder();
-            
+
             Matcher routerNameMatcher;
             Matcher serviceNameMatcher;
 
             JsonNode labels = container.path("Labels");
-            
             Map<String, String> labelMap = mapper.convertValue(
                 labels,
                 new TypeReference<Map<String, String>>() {}
             );
-        
+
             try {
 
                 List<String> routerKeySet = labelMap.keySet().stream().filter(k -> k.startsWith("traefik")).toList();
@@ -97,20 +100,18 @@ public class TraefikFileConfig {
                 for (String key : routerKeySet) {
                     routerNameMatcher = routerNameRegex.matcher(key);
                     serviceNameMatcher = serviceNameRegex.matcher(key);
-                    
+
                     if (routerNameMatcher.matches()) {
                         if (routerNameBuilder.isEmpty()) {
                             routerNameBuilder.append(routerNameMatcher.group(1));
                         }
-                        
-                        labelMatcher = labelRegex.matcher(key); 
-                        
-                        if (labelMatcher.find()) {  
+
+                        Matcher labelMatcher = labelRegex.matcher(key);
+
+                        if (labelMatcher.find()) {
                             if (labelMatcher.group("entrypoints") != null) {
                                 List<String> ePList = getListFromString(labelMap.get(key));
-                                if (ePList != null) {
-                                    entrypoints.addAll(ePList);
-                                }
+                                entrypoints.addAll(ePList);
                             } else if (labelMatcher.group("rule") != null) {
                                 rule.append(labelMap.get(key));
                             } else if (labelMatcher.group("tls") != null) {
@@ -118,16 +119,14 @@ public class TraefikFileConfig {
                             }
                         }
                     }
-                    
+
                     if (serviceNameMatcher.find()) {
                         if (serviceNameBuilder.isEmpty()) {
                             serviceNameBuilder.append(serviceNameMatcher.group(1).trim());
                         }
                         service.append(serviceNameBuilder.toString());
                         List<String> urlList = getListFromString(labelMap.get(key));
-                        if (urlList != null) {
-                            url.addAll(urlList);
-                        }
+                        url.addAll(urlList);
                     }
                 }
 
@@ -135,32 +134,24 @@ public class TraefikFileConfig {
                     if (!areLabelsValid(entrypoints, rule, tls, service, url)) {
                         throw new InvalidJsonNodeException("JsonNode validation failed: Following labels " + nullKeys.toString().replaceAll("[\\[\\]]", "") + " were not found");
                     } else {
-                        
+
                         MandatoryLabels mandatoryLabels = getMandatoryLabelsRecord();
-                        
+
                         mandatoryLabels.entrypoints().addAll(entrypoints);
                         mandatoryLabels.urls().addAll(url);
                         mandatoryLabels.rule().append(rule.toString());
                         mandatoryLabels.tls().append(tls.toString());
                         mandatoryLabels.service().append(service.toString());
-
-                        Router routers = getRouterRecord(mandatoryLabels);
+                        mandatoryLabels.containerName().append(containerName.toString());
+                        Router routers = getNewRouterRecord(mandatoryLabels);
                         Service services = getServiceRecord(mandatoryLabels);
 
                         httpConfig.routers().put(routerNameBuilder.toString(), routers);
                         httpConfig.services().put(serviceNameBuilder.toString(), services);
                     }
-                    
+
                 } else {
-                    
-                    StringBuilder messageBuilder = new StringBuilder();
-                    
-                    if (routerNameBuilder.isEmpty()) {
-                        messageBuilder.append("JsonNode validation failed: Missing router name in labels");
-                    } else if (serviceNameBuilder.isEmpty()) {
-                        messageBuilder.append("JsonNode validation failed: Missing service name in labels");
-                    }
-                        throw new InvalidJsonNodeException(messageBuilder.toString());
+                    throw new InvalidJsonNodeException("JsonNode validation failed: Router or Service Names not found for " + containerName.toString() );
                 }
 
             } catch (InvalidJsonNodeException e) {
@@ -173,30 +164,22 @@ public class TraefikFileConfig {
         fileConfigs.put(proxyName, new FileConfig(httpConfig));
     }
 
-    private Router getRouterRecord(MandatoryLabels mandatoryLabels) {
-        boolean tls = false;
+    private Router getNewRouterRecord(MandatoryLabels mandatoryLabels) {
+        boolean tls = Boolean.parseBoolean(mandatoryLabels.tls().toString());
 
-        if (Boolean.valueOf(mandatoryLabels.tls().toString())) {
-            tls = true;
-        }
-
-        Router router = new Router (
+        return new Router (
             mandatoryLabels.entrypoints(),
             mandatoryLabels.rule().toString(),
             tls ? new TLS() : null,
             mandatoryLabels.service().toString()
         );
-
-        return router;
     }
 
     private Service getServiceRecord(MandatoryLabels mandatoryLabels) {
 
-        Service service =  new Service(
+        return new Service(
             new LoadBalancer(List.of(new Server(mandatoryLabels.urls())))
         );
-
-        return service;
     }
 
     public FileConfig getConfig(String proxyHostName) {
@@ -238,11 +221,7 @@ public class TraefikFileConfig {
             nullKeys.add("url");
         }
 
-        if (nullKeys.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return nullKeys.isEmpty();
 
     }
 
@@ -252,7 +231,8 @@ public class TraefikFileConfig {
             new StringBuilder(),
             new StringBuilder(),
             new StringBuilder(),
-            new ArrayList<>()
+            new ArrayList<>(),
+            new StringBuilder()
         );
     }
 }

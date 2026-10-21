@@ -33,4 +33,4 @@ target
 
 .routeConfigs
 .*.json
-*.yaml
+generated-yamls

@@ -1,0 +1,235 @@
+[ {
+  "Id" : "4ad7ac04e98b3b44021af6caa45687ff6c5f0ac5e122af8bbb78d1c752173adb",
+  "Names" : [ "/traefik-sync-app1-1" ],
+  "Image" : "alpine/socat",
+  "ImageID" : "sha256:22d77becaeeea8ef56b8c4bb2312323acafe85354be6a85714ff5050e3537842",
+  "ImageManifestDescriptor" : {
+    "mediaType" : "application/vnd.oci.image.manifest.v1+json",
+    "digest" : "sha256:c3fd2a0733ac5e45d1274a525334634ac88fb6ea0487b7128d172b7c0bd58753",
+    "size" : 672,
+    "platform" : {
+      "architecture" : "amd64",
+      "os" : "linux"
+    }
+  },
+  "Command" : "socat tcp-listen:80,fork,reuseaddr 'exec:echo -e 'HTTP/1.1 200 OKr\nr\nHello from App 1!''",
+  "Created" : 1792555993,
+  "Ports" : [ ],
+  "Labels" : {
+    "com.docker.compose.config-hash" : "1720b9068fdde58b24ff92f4a4c33d3599e1c7f768dc44b4a13ec87e394a04e7",
+    "com.docker.compose.container-number" : "1",
+    "com.docker.compose.depends_on" : "",
+    "com.docker.compose.image" : "sha256:c3fd2a0733ac5e45d1274a525334634ac88fb6ea0487b7128d172b7c0bd58753",
+    "com.docker.compose.oneoff" : "False",
+    "com.docker.compose.project" : "traefik-sync",
+    "com.docker.compose.project.config_files" : "/home/powder/Development/traefik-sync/docker-compose.yml",
+    "com.docker.compose.project.working_dir" : "/home/powder/Development/traefik-sync",
+    "com.docker.compose.service" : "app1",
+    "com.docker.compose.version" : "5.6.0",
+    "traefik.enable" : "true",
+    "traefik.http.routers.app1.entrypoints" : "web,websecure",
+    "traefik.http.routers.app1.rule" : "Host(`app1.localhost`)",
+    "traefik.http.routers.app1.tls" : "true",
+    "traefik.http.services.app1.loadbalancer.server.port" : "80"
+  },
+  "State" : "running",
+  "Status" : "Up 31 seconds",
+  "HostConfig" : {
+    "NetworkMode" : "traefik-sync_default"
+  },
+  "Health" : {
+    "Status" : "none",
+    "FailingStreak" : 0
+  },
+  "NetworkSettings" : {
+    "Networks" : {
+      "traefik-sync_default" : {
+        "IPAMConfig" : null,
+        "Links" : null,
+        "Aliases" : null,
+        "DriverOpts" : null,
+        "GwPriority" : 0,
+        "NetworkID" : "15db33f9e776b16123d3e289445afc802f1e1f3aede81263fee92f1b0e614e1f",
+        "EndpointID" : "e0f43609bd0519960000bf4a48cb27199cc1dcdd2b2e9722f2ef61b89ce4464a",
+        "Gateway" : "172.18.0.1",
+        "IPAddress" : "172.18.0.3",
+        "MacAddress" : "f2:6a:df:e1:1f:2a",
+        "IPPrefixLen" : 16,
+        "IPv6Gateway" : "",
+        "GlobalIPv6Address" : "",
+        "GlobalIPv6PrefixLen" : 0,
+        "DNSNames" : null
+      }
+    }
+  },
+  "Mounts" : [ ]
+}, {
+  "Id" : "1e1d95c26c24c05b9a3fac1541bd481c56adea782f9be631e773b62cf4b18228",
+  "Names" : [ "/whoami" ],
+  "Image" : "traefik/whoami",
+  "ImageID" : "sha256:c4717a8d1f0134a7444e24f881160e033991f23027c6c5a9a3f8fd22e70d1d44",
+  "ImageManifestDescriptor" : {
+    "mediaType" : "application/vnd.oci.image.manifest.v1+json",
+    "digest" : "sha256:80f8bb74f634d45d55967820a702c5fddf01cf92968bb29ed7a3573dd16b0e55",
+    "size" : 863,
+    "platform" : {
+      "architecture" : "amd64",
+      "os" : "linux"
+    }
+  },
+  "Command" : "/whoami",
+  "Created" : 1792300087,
+  "Ports" : [ {
+    "IP" : "",
+    "PrivatePort" : 80,
+    "Type" : "tcp"
+  } ],
+  "Labels" : {
+    "com.docker.compose.config-hash" : "7f7b366ac8c632aa2bcba3099c8b68d7b104cc441e17913496f5c93ce8a65939",
+    "com.docker.compose.container-number" : "1",
+    "com.docker.compose.depends_on" : "",
+    "com.docker.compose.image" : "sha256:80f8bb74f634d45d55967820a702c5fddf01cf92968bb29ed7a3573dd16b0e55",
+    "com.docker.compose.oneoff" : "False",
+    "com.docker.compose.project" : "traefik-sync",
+    "com.docker.compose.project.config_files" : "/home/powder/Development/traefik-sync/docker-compose.yml",
+    "com.docker.compose.project.working_dir" : "/home/powder/Development/traefik-sync",
+    "com.docker.compose.replace" : "whoami",
+    "com.docker.compose.service" : "app2",
+    "com.docker.compose.version" : "5.6.0",
+    "org.opencontainers.image.created" : "2026-07-29T15:40:56Z",
+    "org.opencontainers.image.description" : "Tiny Go webserver that prints OS information and HTTP request to output",
+    "org.opencontainers.image.documentation" : "https://github.com/traefik/whoami",
+    "org.opencontainers.image.revision" : "1ce75d01b6978863647da42557a707a479da3a51",
+    "org.opencontainers.image.source" : "https://github.com/traefik/whoami",
+    "org.opencontainers.image.title" : "whoami",
+    "org.opencontainers.image.url" : "https://github.com/traefik/whoami",
+    "org.opencontainers.image.version" : "1.12.0",
+    "traefik.enable" : "true",
+    "traefik.http.routers.app2.entrypoints" : "https",
+    "traefik.http.routers.app2.rule" : "Host(`ghostcastle.space`)",
+    "traefik.http.routers.app2.tls" : "true",
+    "traefik.http.services.app2.loadbalancer.servers[0].url " : " http://localhost"
+  },
+  "State" : "running",
+  "Status" : "Up 31 seconds",
+  "HostConfig" : {
+    "NetworkMode" : "traefik-sync_default"
+  },
+  "Health" : {
+    "Status" : "none",
+    "FailingStreak" : 0
+  },
+  "NetworkSettings" : {
+    "Networks" : {
+      "traefik-sync_default" : {
+        "IPAMConfig" : null,
+        "Links" : null,
+        "Aliases" : null,
+        "DriverOpts" : null,
+        "GwPriority" : 0,
+        "NetworkID" : "15db33f9e776b16123d3e289445afc802f1e1f3aede81263fee92f1b0e614e1f",
+        "EndpointID" : "3e79887b21db7fab1a731e77336786c2afd476941283a6ba41198ac4c6dd3e1f",
+        "Gateway" : "172.18.0.1",
+        "IPAddress" : "172.18.0.4",
+        "MacAddress" : "9e:78:02:d7:b8:d0",
+        "IPPrefixLen" : 16,
+        "IPv6Gateway" : "",
+        "GlobalIPv6Address" : "",
+        "GlobalIPv6PrefixLen" : 0,
+        "DNSNames" : null
+      }
+    }
+  },
+  "Mounts" : [ ]
+}, {
+  "Id" : "04fb19e7aeb4def9a79bfdff1c55fe4e799a9366124834477b33ca13ed16c485",
+  "Names" : [ "/socket-proxy" ],
+  "Image" : "lscr.io/linuxserver/socket-proxy:latest",
+  "ImageID" : "sha256:e5d819de59b343c01b2fe7adc7fad3c7a60e5dba08e45f1ac317352bc08599b5",
+  "ImageManifestDescriptor" : {
+    "mediaType" : "application/vnd.oci.image.manifest.v1+json",
+    "digest" : "sha256:ac29ca26fbb6f06e9dbd2e00c42a8b70bfaadfe9734192f2cfc69815c22b361a",
+    "size" : 862,
+    "platform" : {
+      "architecture" : "amd64",
+      "os" : "linux"
+    }
+  },
+  "Command" : "/docker-entrypoint.sh",
+  "Created" : 1792162112,
+  "Ports" : [ {
+    "IP" : "0.0.0.0",
+    "PrivatePort" : 2375,
+    "PublicPort" : 2375,
+    "Type" : "tcp"
+  }, {
+    "IP" : "::",
+    "PrivatePort" : 2375,
+    "PublicPort" : 2375,
+    "Type" : "tcp"
+  } ],
+  "Labels" : {
+    "build_version" : "Linuxserver.io version:- 3.4.7-r0-ls103 Build-date:- 2026-10-15T17:26:28+00:00",
+    "com.docker.compose.config-hash" : "d7addf2bca0ab8e5d93bfc552dad3f32d9089d86dc8d3c6833656ad64ec2be45",
+    "com.docker.compose.container-number" : "1",
+    "com.docker.compose.depends_on" : "",
+    "com.docker.compose.image" : "sha256:ac29ca26fbb6f06e9dbd2e00c42a8b70bfaadfe9734192f2cfc69815c22b361a",
+    "com.docker.compose.oneoff" : "False",
+    "com.docker.compose.project" : "traefik-sync",
+    "com.docker.compose.project.config_files" : "/home/powder/Development/traefik-sync/docker-compose.yml",
+    "com.docker.compose.project.working_dir" : "/home/powder/Development/traefik-sync",
+    "com.docker.compose.service" : "socket-proxy",
+    "com.docker.compose.version" : "5.6.0",
+    "maintainer" : "thespad",
+    "org.opencontainers.image.authors" : "linuxserver.io",
+    "org.opencontainers.image.created" : "2026-10-15T17:26:28+00:00",
+    "org.opencontainers.image.description" : "The Socket Proxy is a security-enhanced proxy which allows you to apply access rules to the Docker socket, limiting the attack surface for containers such as watchtower or Traefik that need to use it.",
+    "org.opencontainers.image.documentation" : "https://docs.linuxserver.io/images/docker-socket-proxy",
+    "org.opencontainers.image.licenses" : "GPL-3.0-only",
+    "org.opencontainers.image.ref.name" : "9dbb3f2c1b934cadef565c6d98cb8760245d4b9c",
+    "org.opencontainers.image.revision" : "9dbb3f2c1b934cadef565c6d98cb8760245d4b9c",
+    "org.opencontainers.image.source" : "https://github.com/linuxserver/docker-socket-proxy",
+    "org.opencontainers.image.title" : "Socket-proxy",
+    "org.opencontainers.image.url" : "https://github.com/linuxserver/docker-socket-proxy/packages",
+    "org.opencontainers.image.vendor" : "linuxserver.io",
+    "org.opencontainers.image.version" : "3.4.7-r0-ls103"
+  },
+  "State" : "running",
+  "Status" : "Up About a minute",
+  "HostConfig" : {
+    "NetworkMode" : "traefik-sync_default"
+  },
+  "Health" : {
+    "Status" : "none",
+    "FailingStreak" : 0
+  },
+  "NetworkSettings" : {
+    "Networks" : {
+      "traefik-sync_default" : {
+        "IPAMConfig" : null,
+        "Links" : null,
+        "Aliases" : null,
+        "DriverOpts" : null,
+        "GwPriority" : 0,
+        "NetworkID" : "15db33f9e776b16123d3e289445afc802f1e1f3aede81263fee92f1b0e614e1f",
+        "EndpointID" : "40369f89d3896bfd7efcebdd4a12a574a1522f20f465a7f5bc617b71be8800e2",
+        "Gateway" : "172.18.0.1",
+        "IPAddress" : "172.18.0.2",
+        "MacAddress" : "5e:fc:4b:7d:00:12",
+        "IPPrefixLen" : 16,
+        "IPv6Gateway" : "",
+        "GlobalIPv6Address" : "",
+        "GlobalIPv6PrefixLen" : 0,
+        "DNSNames" : null
+      }
+    }
+  },
+  "Mounts" : [ {
+    "Type" : "bind",
+    "Source" : "/var/run/docker.sock",
+    "Destination" : "/var/run/docker.sock",
+    "Mode" : "ro",
+    "RW" : false,
+    "Propagation" : "rprivate"
+  } ]
+} ]

@@ -1,6 +1,5 @@
 package space.ghostcastle;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -29,7 +29,7 @@ public class DockerProxies {
     private static final Path socketProxiesFile = Paths.get(".socket-proxies");
     private static final String containerPath = "/containers/json";
     private static final String infoPath = "/info";
-    private final ObjectMapper map = new ObjectMapper();
+    private static final ObjectMapper map = new ObjectMapper();
 
     private DockerProxies() {
         try (Stream<String> lines = Files.lines(socketProxiesFile)) {
@@ -54,7 +54,7 @@ public class DockerProxies {
         return instance;
     }
 
-    private JsonNode makeHttpGetRequest(String url, String path) {
+    public static JsonNode makeHttpGetRequest(HttpClient client, String url, String path) {
         
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -77,7 +77,7 @@ public class DockerProxies {
 
     private String getHostname(String proxy) {
             
-        JsonNode rootNode = makeHttpGetRequest(proxy, infoPath);
+        JsonNode rootNode = makeHttpGetRequest(client, proxy, infoPath);
             
         if (rootNode == null) {
             throw new NullPointerException("Something went wrong with calling proxy " + proxy + " on path " + infoPath); 
@@ -94,7 +94,7 @@ public class DockerProxies {
 
         for (String proxy : this.dockerProxies) {
 
-            JsonNode rootNode = makeHttpGetRequest(proxy, containerPath);
+            JsonNode rootNode = makeHttpGetRequest(client, proxy, containerPath);
 
             if (rootNode == null) {
                 throw new NullPointerException("Something went wrong with calling proxy " + proxy + " on path " + containerPath);
@@ -109,9 +109,11 @@ public class DockerProxies {
 
             for (JsonNode node : rootNode) {
                 ObjectNode objNode = map.createObjectNode();
-                
+                List<String> namesArrayNode = map.convertValue(node.path("Names"),
+                    new TypeReference<List<String>>() {
+                        });
+                objNode.put("Name", namesArrayNode.getLast());
                 objNode.put("Id", node.path("Id").asText());
-                objNode.set("Names", node.path("Names"));
                 objNode.set("Ports", node.path("Ports"));
                 objNode.set("Labels", node.path("Labels"));
                 
@@ -119,7 +121,6 @@ public class DockerProxies {
             }
             records.add(new DockerProxyRecord(proxyName, arrayNode));
         }
-        
         
         return records;
     }
