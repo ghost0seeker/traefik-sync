@@ -22,6 +22,10 @@ jobs:
           cache: 'maven'
           distribution: "temurin"
 
+      - name: Setup
+        run : |
+          touch .socket-proxies
+
 #      - name: Build with Maven
 #        run: mvn clean compile
 
