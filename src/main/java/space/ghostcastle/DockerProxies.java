@@ -109,6 +109,7 @@ public class DockerProxies {
 
             for (JsonNode node : rootNode) {
                 ObjectNode objNode = map.createObjectNode();
+                JsonNode nameNode = node.path("Name");
                 List<String> namesArrayNode = map.convertValue(node.path("Names"),
                     new TypeReference<List<String>>() {
                         });

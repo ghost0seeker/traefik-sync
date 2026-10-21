@@ -1,0 +1,27 @@
+---
+http:
+  routers:
+    app2:
+      entryPoints:
+      - "https"
+      rule: "Host(`ghostcastle.space`)"
+      tls: {}
+      service: "app2"
+    app1:
+      entryPoints:
+      - "web"
+      - "websecure"
+      rule: "Host(`app1.localhost`)"
+      tls: {}
+      service: "app1"
+  services:
+    app2:
+      loadBalancer:
+        servers:
+        - url:
+          - "http://localhost"
+    app1:
+      loadBalancer:
+        servers:
+        - url:
+          - "80"

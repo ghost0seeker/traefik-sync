@@ -1,0 +1,26 @@
+---
+http:
+  routers:
+    ntfy:
+      entryPoints:
+      - "https"
+      rule: "Host(`ntfy.ghostcastle.space`)"
+      tls: {}
+      service: "ntfy"
+    vikunja:
+      entryPoints:
+      - "https"
+      rule: "Host(`tasks.ghostcastle.space`)"
+      tls: {}
+      service: "vikunja"
+  services:
+    ntfy:
+      loadBalancer:
+        servers:
+        - url:
+          - "80"
+    vikunja:
+      loadBalancer:
+        servers:
+        - url:
+          - "3456"

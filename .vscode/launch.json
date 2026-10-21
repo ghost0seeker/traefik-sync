@@ -17,6 +17,6 @@
             "request": "launch",
             "mainClass": "space.ghostcastle.TraefikSync",
             "projectName": "traefik-sync",
-        }
+        },
     ]
 }

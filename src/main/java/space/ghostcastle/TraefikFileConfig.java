@@ -74,9 +74,6 @@ public class TraefikFileConfig {
 
             containerName.append(container.path("Name"));
 
-            ArrayNode containerNames = (ArrayNode) container.path("Names");
-            containerName.append(List.of(containerNames).getLast());
-
             StringBuilder routerNameBuilder = new StringBuilder();
             StringBuilder serviceNameBuilder = new StringBuilder();
 
